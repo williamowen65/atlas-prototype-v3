@@ -9,9 +9,48 @@ function formatSemanticType(value) {
   return String(value ?? "").trim().toUpperCase();
 }
 
+function pluralizeType(type, count) {
+  const value = String(type ?? "").trim();
+  if (count === 1 || !value) return value;
+  if (value.toLowerCase() === "evidence") return value;
+  if (/[^aeiou]y$/i.test(value)) return `${value.slice(0, -1)}ies`;
+  if (/(s|x|z|ch|sh)$/i.test(value)) return `${value}es`;
+  return `${value}s`;
+}
+
 function formatAverage(value) {
   const number = Number(value ?? 0);
   return Number.isFinite(number) ? number.toFixed(1) : "0.0";
+}
+
+function childTypeSummaries(node, allNodes) {
+  const summaries = new Map();
+
+  for (const requestedType of node.requestedChildTypes ?? []) {
+    const type = String(requestedType ?? "").trim();
+    if (!type) continue;
+    const key = type.toLowerCase();
+    if (!summaries.has(key)) {
+      summaries.set(key, { type, count: 0, requested: true });
+    } else {
+      summaries.get(key).requested = true;
+    }
+  }
+
+  for (const candidate of allNodes) {
+    if (!(candidate.parentIds ?? []).includes(node.id)) continue;
+
+    const type = String(candidate.type ?? "").trim();
+    if (!type) continue;
+    const key = type.toLowerCase();
+
+    if (!summaries.has(key)) {
+      summaries.set(key, { type, count: 0, requested: false });
+    }
+    summaries.get(key).count += 1;
+  }
+
+  return Array.from(summaries.values());
 }
 
 function appendIcon(element, pathData) {
@@ -55,6 +94,28 @@ function createOpenPostLink(node) {
 
   appendIcon(link, "M5 12h14 M13 6l6 6-6 6");
   return link;
+}
+
+function renderChildSummary(node, allNodes) {
+  const summaries = childTypeSummaries(node, allNodes);
+  if (summaries.length === 0) return null;
+
+  const summary = document.createElement("div");
+  summary.className = "node-child-summary";
+  summary.setAttribute("aria-label", "Child type counts");
+
+  for (const item of summaries) {
+    const value = document.createElement("span");
+    value.className = "node-child-summary-item";
+    if (item.requested) value.classList.add("requested");
+
+    const count = document.createElement("strong");
+    count.textContent = String(item.count);
+    value.append(count, ` ${pluralizeType(item.type, item.count)}`);
+    summary.appendChild(value);
+  }
+
+  return summary;
 }
 
 export function mountNodeManager(graph) {
@@ -102,7 +163,7 @@ export function mountNodeManager(graph) {
     return stats;
   }
 
-  function renderNodeCard(node) {
+  function renderNodeCard(node, allNodes) {
     const entry = document.createElement("div");
     entry.className = "node-entry";
 
@@ -168,10 +229,18 @@ export function mountNodeManager(graph) {
     });
     remove.addEventListener("click", () => deleteNode(node));
 
+    const childSummary = renderChildSummary(node, allNodes);
+    if (childSummary) {
+      card.classList.add("has-child-summary");
+      body.style.paddingBottom = "54px";
+    }
+
     const openPost = createOpenPostLink(node);
 
     actions.append(edit, remove);
-    card.append(body, actions, openPost);
+    card.append(body, actions);
+    if (childSummary) card.appendChild(childSummary);
+    card.appendChild(openPost);
     entry.appendChild(card);
     return entry;
   }
@@ -194,7 +263,7 @@ export function mountNodeManager(graph) {
       return;
     }
 
-    for (const node of nodes) elements.nodeList.appendChild(renderNodeCard(node));
+    for (const node of nodes) elements.nodeList.appendChild(renderNodeCard(node, nodes));
   }
 
   async function deleteNode(node) {
