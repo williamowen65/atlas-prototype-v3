@@ -10,6 +10,11 @@ function normalizeList(value) {
   return [];
 }
 
+function normalizeNonNegativeNumber(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : fallback;
+}
+
 export function normalizeNodeInput(input) {
   const title = String(input.title ?? "").trim();
   const type = String(input.type ?? "").trim();
@@ -38,6 +43,9 @@ export function createNodeRecord(input, { id, now } = {}) {
   return {
     id: id ?? crypto.randomUUID(),
     ...normalized,
+    parentIds: normalizeList(input.parentIds),
+    votes: normalizeNonNegativeNumber(input.votes),
+    average: normalizeNonNegativeNumber(input.average),
     createdAt: timestamp,
     updatedAt: timestamp,
   };
@@ -48,9 +56,23 @@ export function updateNodeRecord(existingNode, input, { now } = {}) {
     throw new Error("An existing Node is required for an update.");
   }
 
-  return {
+  const updated = {
     ...existingNode,
     ...normalizeNodeInput(input),
     updatedAt: now ?? new Date().toISOString(),
   };
+
+  if (Object.prototype.hasOwnProperty.call(input, "parentIds")) {
+    updated.parentIds = normalizeList(input.parentIds);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, "votes")) {
+    updated.votes = normalizeNonNegativeNumber(input.votes);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, "average")) {
+    updated.average = normalizeNonNegativeNumber(input.average);
+  }
+
+  return updated;
 }
