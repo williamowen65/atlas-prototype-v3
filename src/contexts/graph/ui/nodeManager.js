@@ -302,6 +302,11 @@ export function mountNodeManager(graph) {
       const response = await fetch("./src/contexts/graph/fixtures/sample-nodes.json", { cache: "no-store" });
       if (!response.ok) throw new Error(`Unable to load fixture data (${response.status}).`);
       const fixtures = await response.json();
+
+      // Remove a fixture retired from the prototype so reloading sample data
+      // updates existing IndexedDB state without requiring a full clear.
+      await graph.deleteNode("fixture-ferry-ridership-evidence");
+
       const imported = await graph.importNodes(fixtures);
       await refresh();
       showMessage(`${imported.length} sample Nodes loaded into IndexedDB.`);
