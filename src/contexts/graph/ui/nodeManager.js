@@ -24,6 +24,31 @@ function formatSemanticType(value) {
   return String(value ?? "").trim().toUpperCase();
 }
 
+function createIconButton({ label, pathData, extraClass = "" }) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `node-icon-button ${extraClass}`.trim();
+  button.setAttribute("aria-label", label);
+  button.title = label;
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", pathData);
+  path.setAttribute("fill", "none");
+  path.setAttribute("stroke", "currentColor");
+  path.setAttribute("stroke-width", "1.9");
+  path.setAttribute("stroke-linecap", "round");
+  path.setAttribute("stroke-linejoin", "round");
+
+  svg.appendChild(path);
+  button.appendChild(svg);
+  return button;
+}
+
 export function mountNodeManager(graph) {
   const elements = {
     storageCard: document.querySelector(".storage-card"),
@@ -194,16 +219,18 @@ export function mountNodeManager(graph) {
     const actions = document.createElement("div");
     actions.className = "node-actions";
 
-    const edit = document.createElement("button");
-    edit.type = "button";
-    edit.className = "button button-secondary button-small";
-    edit.textContent = "Edit";
+    const edit = createIconButton({
+      label: `Edit ${node.title}`,
+      pathData: "M12 20h9 M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z",
+      extraClass: "node-icon-button-edit",
+    });
     edit.addEventListener("click", () => beginEdit(node.id));
 
-    const remove = document.createElement("button");
-    remove.type = "button";
-    remove.className = "button button-danger button-small";
-    remove.textContent = "Delete";
+    const remove = createIconButton({
+      label: `Delete ${node.title}`,
+      pathData: "M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v5 M14 11v5",
+      extraClass: "node-icon-button-delete",
+    });
     remove.addEventListener("click", () => deleteNode(node));
 
     actions.append(edit, remove);
