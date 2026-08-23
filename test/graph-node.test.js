@@ -30,12 +30,38 @@ test("creates a generic Node record without semantic subclasses", () => {
   assert.equal(node.id, "node-1");
   assert.equal(node.type, "question");
   assert.deepEqual(node.requestedChildTypes, []);
+  assert.deepEqual(node.parentIds, []);
+  assert.equal(node.votes, 0);
+  assert.equal(node.average, 0);
   assert.equal(node.createdAt, node.updatedAt);
+});
+
+test("creates fixture-style relationship and voting metadata", () => {
+  const node = createNodeRecord(
+    {
+      title: "A solution",
+      type: "solution",
+      parentIds: ["parent-1", "parent-2"],
+      votes: 12,
+      average: 4.5,
+    },
+    { id: "node-child", now: "2026-08-23T18:00:00.000Z" },
+  );
+
+  assert.deepEqual(node.parentIds, ["parent-1", "parent-2"]);
+  assert.equal(node.votes, 12);
+  assert.equal(node.average, 4.5);
 });
 
 test("updates mutable Node data while preserving identity and creation time", () => {
   const existing = createNodeRecord(
-    { title: "Original", type: "issue" },
+    {
+      title: "Original",
+      type: "issue",
+      parentIds: ["parent-1"],
+      votes: 3,
+      average: 4.2,
+    },
     { id: "node-2", now: "2026-08-23T18:00:00.000Z" },
   );
 
@@ -51,6 +77,9 @@ test("updates mutable Node data while preserving identity and creation time", ()
   assert.equal(updated.title, "Updated");
   assert.equal(updated.type, "solution");
   assert.deepEqual(updated.affectedLocations, ["Puget Sound"]);
+  assert.deepEqual(updated.parentIds, ["parent-1"]);
+  assert.equal(updated.votes, 3);
+  assert.equal(updated.average, 4.2);
 });
 
 test("requires title and semantic type", () => {
