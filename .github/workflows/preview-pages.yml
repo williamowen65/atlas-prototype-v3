@@ -5,23 +5,22 @@ on:
     branches:
       - preview
       - 'PTT-*'
+  workflow_dispatch:
 
 concurrency:
-  group: preview-pages
+  group: preview-pages-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   follow-preview:
     name: Keep preview following the active feature branch
-    if: github.ref_name != 'preview'
+    if: github.event_name == 'push' && github.ref_name != 'preview'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      active: ${{ steps.sync.outputs.active }}
+      actions: write
     steps:
-      - name: Advance preview when it was following this branch
-        id: sync
+      - name: Advance preview and request a preview deployment
         uses: actions/github-script@v7
         with:
           script: |
@@ -38,7 +37,6 @@ jobs:
             const previewSha = previewRef.data.object.sha;
 
             if (previewSha !== beforeSha) {
-              core.setOutput('active', 'false');
               core.notice(
                 `preview is not following ${context.ref}; leaving preview unchanged.`
               );
@@ -53,39 +51,19 @@ jobs:
               force: true
             });
 
-            core.setOutput('active', 'true');
             core.notice(`Moved preview from ${beforeSha} to ${newSha}.`);
 
-  deploy-feature:
-    name: Deploy active feature branch to GitHub Pages
-    needs: follow-preview
-    if: needs.follow-preview.outputs.active == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Checkout active feature commit
-        uses: actions/checkout@v6
+            await github.rest.actions.createWorkflowDispatch({
+              owner,
+              repo,
+              workflow_id: 'preview-pages.yml',
+              ref: 'preview'
+            });
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload static site
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: '.'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+            core.notice('Requested GitHub Pages deployment from the preview ref.');
 
   deploy-preview:
-    name: Deploy manually moved preview branch to GitHub Pages
+    name: Deploy preview branch to GitHub Pages
     if: github.ref_name == 'preview'
     runs-on: ubuntu-latest
     permissions:
