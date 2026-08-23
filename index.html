@@ -3,20 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Atlas Graph Node Manager</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+  <title>Graph Nodes · Atlas</title>
   <link id="app-styles" rel="stylesheet" href="./styles.css" />
+  <link id="page-styles" rel="stylesheet" href="./page-layout.css" />
   <script>
-    document.querySelector("#app-styles").href = `./styles.css?preview=${Date.now()}`;
+    const previewVersion = Date.now();
+    document.querySelector("#app-styles").href = `./styles.css?preview=${previewVersion}`;
+    document.querySelector("#page-styles").href = `./page-layout.css?preview=${previewVersion}`;
   </script>
 </head>
 <body>
   <main class="app-shell">
-    <header class="page-header">
+    <nav class="app-nav" aria-label="Graph navigation">
+      <a class="app-nav-link active" href="./index.html" aria-current="page">Nodes</a>
+      <a class="app-nav-link" href="./create.html">Create Node</a>
+    </nav>
+
+    <header class="page-header compact-page-header">
       <div>
         <p class="eyebrow">Atlas Prototype V3 · PTT-58</p>
-        <h1>Graph Node Manager</h1>
-        <p class="lede">Create and inspect Graph Nodes stored locally in this browser with IndexedDB.</p>
+        <h1>Graph Nodes</h1>
+        <p class="lede">Inspect and manage Graph Nodes stored locally in this browser.</p>
       </div>
       <div class="storage-card" aria-live="polite">
         <span class="status-dot" aria-hidden="true"></span>
@@ -27,68 +34,7 @@
       </div>
     </header>
 
-    <section class="workspace">
-      <article class="panel form-panel">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Graph context</p>
-            <h2 id="form-title">Create Node</h2>
-          </div>
-          <button id="cancel-edit" class="button button-quiet" type="button" hidden>Cancel edit</button>
-        </div>
-
-        <form id="node-form">
-          <input id="node-id" type="hidden" />
-
-          <label>
-            <span>Title</span>
-            <input id="node-title" name="title" required maxlength="160" placeholder="e.g. Improve regional transit" />
-          </label>
-
-          <label>
-            <span>Semantic type</span>
-            <select id="node-type" name="type" required>
-              <option></option>
-              <option value="issue">issue</option>
-              <option value="solution">solution</option>
-              <option value="question">question</option>
-              <option value="proposal">proposal</option>
-              <option value="evidence">evidence</option>
-              <option value="implementation">implementation</option>
-            </select>
-            <small>Choose a suggestion or type a new semantic type. Type is data, not a hard-coded Node subclass.</small>
-          </label>
-
-          <label>
-            <span>Description</span>
-            <textarea id="node-description" name="description" rows="5" maxlength="2000" placeholder="Describe this contribution…"></textarea>
-          </label>
-
-          <label>
-            <span>Requested child types</span>
-            <select id="node-requested-child-types" name="requestedChildTypes" multiple>
-              <option value="issue">issue</option>
-              <option value="solution">solution</option>
-              <option value="question">question</option>
-              <option value="proposal">proposal</option>
-              <option value="evidence">evidence</option>
-              <option value="implementation">implementation</option>
-            </select>
-            <small>Choose any suggestions or enter new child types. Multiple values are allowed.</small>
-          </label>
-
-          <label>
-            <span>Affected locations</span>
-            <input id="node-affected-locations" name="affectedLocations" placeholder="Tacoma, Puget Sound" />
-            <small>Stored as contextual metadata, not hierarchy.</small>
-          </label>
-
-          <div class="form-actions">
-            <button id="submit-node" class="button button-primary" type="submit">Create Node</button>
-          </div>
-        </form>
-      </article>
-
+    <section class="workspace nodes-workspace">
       <section class="panel data-panel">
         <div class="panel-heading data-heading">
           <div>
@@ -96,6 +42,7 @@
             <h2>Nodes <span id="node-count" class="count-badge">0</span></h2>
           </div>
           <div class="toolbar">
+            <a class="button button-primary button-link" href="./create.html">Create Node</a>
             <button id="load-fixtures" class="button button-secondary" type="button">Load sample data</button>
             <button id="toggle-raw" class="button button-secondary" type="button" aria-expanded="false">Show raw data</button>
             <button id="clear-all" class="button button-danger" type="button">Clear all</button>
@@ -103,7 +50,6 @@
         </div>
 
         <div id="message" class="message" role="status" aria-live="polite" hidden></div>
-
         <div id="node-list" class="node-list"></div>
 
         <section id="raw-data-panel" class="raw-data-panel" hidden>
@@ -117,8 +63,6 @@
     </section>
   </main>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
   <script type="module">
     import(`./src/app/main.js?preview=${Date.now()}`);
   </script>
