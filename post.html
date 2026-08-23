@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Post · Atlas</title>
+  <link id="app-styles" rel="stylesheet" href="./styles.css" />
+  <link id="page-styles" rel="stylesheet" href="./page-layout.css" />
+  <script>
+    const previewVersion = Date.now();
+    document.querySelector("#app-styles").href = `./styles.css?preview=${previewVersion}`;
+    document.querySelector("#page-styles").href = `./page-layout.css?preview=${previewVersion}`;
+  </script>
+</head>
+<body>
+  <main class="app-shell">
+    <nav class="app-nav" aria-label="Graph navigation">
+      <a class="app-nav-link" href="./index.html">Nodes</a>
+      <a class="app-nav-link" href="./create.html">Create Node</a>
+    </nav>
+
+    <header class="page-header compact-page-header">
+      <div>
+        <p class="eyebrow">Atlas Prototype V3 · PTT-58</p>
+        <h1>Post</h1>
+        <p class="lede">View one Graph Node at its own URL.</p>
+      </div>
+      <div class="storage-card" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <strong id="storage-status">Connecting to IndexedDB…</strong>
+          <span id="storage-detail">Local browser persistence</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="workspace post-workspace">
+      <div id="post-message" class="message" role="status" aria-live="polite" hidden></div>
+      <div id="post-view"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import(`./src/app/post.js?preview=${Date.now()}`);
+  </script>
+</body>
+</html>
