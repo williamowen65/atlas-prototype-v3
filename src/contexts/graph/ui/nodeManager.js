@@ -14,13 +14,7 @@ function formatAverage(value) {
   return Number.isFinite(number) ? number.toFixed(1) : "0.0";
 }
 
-function createIconButton({ label, pathData, extraClass = "" }) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = `node-icon-button ${extraClass}`.trim();
-  button.setAttribute("aria-label", label);
-  button.title = label;
-
+function appendIcon(element, pathData) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
   svg.setAttribute("aria-hidden", "true");
@@ -35,8 +29,32 @@ function createIconButton({ label, pathData, extraClass = "" }) {
   path.setAttribute("stroke-linejoin", "round");
 
   svg.appendChild(path);
-  button.appendChild(svg);
+  element.appendChild(svg);
+}
+
+function createIconButton({ label, pathData, extraClass = "" }) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `node-icon-button ${extraClass}`.trim();
+  button.setAttribute("aria-label", label);
+  button.title = label;
+  appendIcon(button, pathData);
   return button;
+}
+
+function createOpenPostLink(node) {
+  const link = document.createElement("a");
+  link.className = "node-icon-button node-open-post-link";
+  link.href = `./post.html?id=${encodeURIComponent(node.id)}`;
+  link.setAttribute("aria-label", `Open post: ${node.title}`);
+  link.title = "Open post";
+  link.style.position = "absolute";
+  link.style.right = "12px";
+  link.style.bottom = "12px";
+  link.style.textDecoration = "none";
+
+  appendIcon(link, "M5 12h14 M13 6l6 6-6 6");
+  return link;
 }
 
 export function mountNodeManager(graph) {
@@ -93,6 +111,7 @@ export function mountNodeManager(graph) {
 
     const body = document.createElement("div");
     body.className = "node-card-body";
+    body.style.paddingBottom = "32px";
 
     const titleLine = document.createElement("div");
     titleLine.className = "node-title-line";
@@ -149,8 +168,10 @@ export function mountNodeManager(graph) {
     });
     remove.addEventListener("click", () => deleteNode(node));
 
+    const openPost = createOpenPostLink(node);
+
     actions.append(edit, remove);
-    card.append(body, actions);
+    card.append(body, actions, openPost);
     entry.appendChild(card);
     return entry;
   }
