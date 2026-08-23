@@ -6,26 +6,44 @@ The planning set includes the generic Atlas Node model, rewrite checklist, next-
 
 ## Preview deployment workflow
 
-This repository uses a dedicated `preview` branch as the single GitHub Pages deployment target for in-progress work.
+This repository uses a dedicated `preview` branch plus GitHub Actions to provide one stable GitHub Pages preview site for in-progress Jira work.
 
-The `preview` branch is **not** a development branch and should not be used for implementation. Feature work continues on Jira-linked branches such as `PTT-58-Create-and-locally-persist-Graph-Nodes`.
+The `preview` branch is **not** a development branch. Feature work continues on Jira-linked branches such as `PTT-58-Create-and-locally-persist-Graph-Nodes`.
 
-When a feature or bounded context needs to be viewed in the browser, move the `preview` branch to that feature branch's current commit. GitHub Pages then serves that code from the repository's one preview site. Later, `preview` can be repointed to a different Jira branch without merging that work into `main`.
+### Activating a branch for preview
 
-Example workflow:
+To preview a feature branch, point `preview` at that feature branch's current commit once. That establishes which branch the preview site is following.
+
+After that, the workflow in [`.github/workflows/preview-pages.yml`](.github/workflows/preview-pages.yml) automatically keeps `preview` synchronized while that same feature branch continues to receive commits:
 
 ```text
-Jira Story
-   ↓
-Jira-created GitHub feature branch
-   ↓
-implementation / commits
-   ↓
-move `preview` to the feature branch commit
-   ↓
-view through GitHub Pages
-   ↓
-move `preview` again when another branch needs review
+PTT-58 feature branch:  A ── B ── C
+                        │    │    │
+preview:                A ── B ── C
+                                  │
+                                  └─ GitHub Pages deployment
 ```
 
-The `preview` branch may be force-updated because its purpose is only to represent the code currently being previewed. `main` remains the source of truth for accepted work and planning documentation.
+On each push to a `PTT-*` branch, the workflow checks whether `preview` points to that branch's previous commit. If it does, that branch is considered the active preview source. The workflow advances `preview` to the new commit and deploys that exact feature commit to GitHub Pages in the same workflow run.
+
+Pushes to other Jira branches do not change the preview unless `preview` was already following them.
+
+### Switching the active preview
+
+To switch to another Jira branch, manually move `preview` to that branch's current commit once. From then on, new commits to that branch automatically advance and redeploy the preview.
+
+Example:
+
+```text
+PTT-58 ───────●
+
+PTT-61 ─────────────●
+                     ↑
+preview ─────────────┘
+```
+
+The `preview` branch may be force-updated because it is only a movable pointer to the code currently being previewed. `main` remains the source of truth for accepted work and planning documentation.
+
+### GitHub Pages setting
+
+Repository **Settings → Pages → Build and deployment → Source** should be set to **GitHub Actions**. The preview workflow uploads the static repository contents and deploys them to the repository's single GitHub Pages URL.
