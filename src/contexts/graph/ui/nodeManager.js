@@ -9,6 +9,17 @@ function createPill(text, extraClass = "") {
   return pill;
 }
 
+function addOptionIfMissing(select, value) {
+  if (!value) {
+    return;
+  }
+
+  const exists = Array.from(select.options).some((option) => option.value === value);
+  if (!exists) {
+    select.add(new Option(value, value, false, false));
+  }
+}
+
 export function mountNodeManager(graph) {
   const elements = {
     storageCard: document.querySelector(".storage-card"),
@@ -34,7 +45,50 @@ export function mountNodeManager(graph) {
     message: document.querySelector("#message"),
   };
 
+  const $ = window.jQuery;
+  const select2Ready = Boolean($?.fn?.select2);
   let messageTimer;
+
+  if (select2Ready) {
+    $(elements.type).select2({
+      tags: true,
+      width: "100%",
+      placeholder: "Choose or enter a semantic type",
+      allowClear: true,
+    });
+
+    $(elements.requestedChildTypes).select2({
+      tags: true,
+      width: "100%",
+      placeholder: "Choose or enter requested child types",
+      closeOnSelect: false,
+    });
+  }
+
+  function setTypeValue(value) {
+    addOptionIfMissing(elements.type, value);
+    if (select2Ready) {
+      $(elements.type).val(value || null).trigger("change");
+    } else {
+      elements.type.value = value ?? "";
+    }
+  }
+
+  function setRequestedChildTypes(values = []) {
+    for (const value of values) {
+      addOptionIfMissing(elements.requestedChildTypes, value);
+    }
+
+    if (select2Ready) {
+      $(elements.requestedChildTypes).val(values).trigger("change");
+      return;
+    }
+
+    const selected = new Set(values);
+    for (const option of elements.requestedChildTypes.options) {
+      option.selected = selected.has(option.value);
+    }
+  }
 
   function showMessage(text, isError = false) {
     clearTimeout(messageTimer);
@@ -49,15 +103,19 @@ export function mountNodeManager(graph) {
   function readForm() {
     return {
       title: elements.title.value,
-      type: elements.type.value,
+      type: select2Ready ? ($(elements.type).val() ?? "") : elements.type.value,
       description: elements.description.value,
-      requestedChildTypes: elements.requestedChildTypes.value,
+      requestedChildTypes: select2Ready
+        ? ($(elements.requestedChildTypes).val() ?? [])
+        : Array.from(elements.requestedChildTypes.selectedOptions, (option) => option.value),
       affectedLocations: elements.affectedLocations.value,
     };
   }
 
   function resetForm() {
     elements.form.reset();
+    setTypeValue("");
+    setRequestedChildTypes([]);
     elements.nodeId.value = "";
     elements.formTitle.textContent = "Create Node";
     elements.submit.textContent = "Create Node";
@@ -152,9 +210,9 @@ export function mountNodeManager(graph) {
 
       elements.nodeId.value = node.id;
       elements.title.value = node.title;
-      elements.type.value = node.type;
+      setTypeValue(node.type);
       elements.description.value = node.description ?? "";
-      elements.requestedChildTypes.value = commaList(node.requestedChildTypes);
+      setRequestedChildTypes(node.requestedChildTypes ?? []);
       elements.affectedLocations.value = commaList(node.affectedLocations);
       elements.formTitle.textContent = "Edit Node";
       elements.submit.textContent = "Save changes";
