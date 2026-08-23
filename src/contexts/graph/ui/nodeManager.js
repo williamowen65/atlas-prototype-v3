@@ -20,6 +20,10 @@ function addOptionIfMissing(select, value) {
   }
 }
 
+function formatSemanticType(value) {
+  return String(value ?? "").trim().toUpperCase();
+}
+
 export function mountNodeManager(graph) {
   const elements = {
     storageCard: document.querySelector(".storage-card"),
@@ -122,33 +126,64 @@ export function mountNodeManager(graph) {
     elements.cancelEdit.hidden = true;
   }
 
+  function renderRequestedChildTypes(node) {
+    const requestedTypes = node.requestedChildTypes ?? [];
+    if (requestedTypes.length === 0) {
+      return null;
+    }
+
+    const tabs = document.createElement("div");
+    tabs.className = "requested-child-tabs";
+    tabs.setAttribute("aria-label", "Requested child types");
+
+    for (const requestedType of requestedTypes) {
+      const tab = document.createElement("span");
+      tab.className = "requested-child-tab";
+      tab.textContent = requestedType;
+      tabs.appendChild(tab);
+    }
+
+    return tabs;
+  }
+
   function renderNodeCard(node) {
+    const entry = document.createElement("div");
+    entry.className = "node-entry";
+
     const card = document.createElement("article");
     card.className = "node-card";
 
     const body = document.createElement("div");
+    body.className = "node-card-body";
+
+    const titleLine = document.createElement("div");
+    titleLine.className = "node-title-line";
+
+    const typeLabel = document.createElement("span");
+    typeLabel.className = "node-type-label";
+    typeLabel.textContent = formatSemanticType(node.type);
+
     const heading = document.createElement("h3");
     heading.textContent = node.title;
-    body.appendChild(heading);
 
-    const meta = document.createElement("div");
-    meta.className = "node-meta";
-    meta.appendChild(createPill(node.type, "type"));
-
-    for (const requestedType of node.requestedChildTypes ?? []) {
-      meta.appendChild(createPill(`requests: ${requestedType}`));
-    }
-
-    for (const location of node.affectedLocations ?? []) {
-      meta.appendChild(createPill(`location: ${location}`));
-    }
-    body.appendChild(meta);
+    titleLine.append(typeLabel, heading);
+    body.appendChild(titleLine);
 
     if (node.description) {
       const description = document.createElement("p");
       description.className = "node-description";
       description.textContent = node.description;
       body.appendChild(description);
+    }
+
+    const locations = node.affectedLocations ?? [];
+    if (locations.length > 0) {
+      const meta = document.createElement("div");
+      meta.className = "node-meta";
+      for (const location of locations) {
+        meta.appendChild(createPill(location, "location"));
+      }
+      body.appendChild(meta);
     }
 
     const id = document.createElement("div");
@@ -173,7 +208,14 @@ export function mountNodeManager(graph) {
 
     actions.append(edit, remove);
     card.append(body, actions);
-    return card;
+    entry.appendChild(card);
+
+    const requestedTabs = renderRequestedChildTypes(node);
+    if (requestedTabs) {
+      entry.appendChild(requestedTabs);
+    }
+
+    return entry;
   }
 
   async function refresh() {
