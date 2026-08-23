@@ -23,13 +23,13 @@ test("normalizes comma-separated Graph Node metadata", () => {
 
 test("creates a generic Node record without semantic subclasses", () => {
   const node = createNodeRecord(
-    { title: "A question", type: "question" },
+    { title: "A question", type: "question", requestedChildTypes: ["answer"] },
     { id: "node-1", now: "2026-08-23T18:00:00.000Z" },
   );
 
   assert.equal(node.id, "node-1");
   assert.equal(node.type, "question");
-  assert.deepEqual(node.requestedChildTypes, []);
+  assert.deepEqual(node.requestedChildTypes, ["answer"]);
   assert.deepEqual(node.parentIds, []);
   assert.equal(node.votes, 0);
   assert.equal(node.average, 0);
@@ -41,6 +41,7 @@ test("creates fixture-style relationship and voting metadata", () => {
     {
       title: "A solution",
       type: "solution",
+      requestedChildTypes: ["evidence"],
       parentIds: ["parent-1", "parent-2"],
       votes: 12,
       average: 4.5,
@@ -58,6 +59,7 @@ test("updates mutable Node data while preserving identity and creation time", ()
     {
       title: "Original",
       type: "issue",
+      requestedChildTypes: ["solution"],
       parentIds: ["parent-1"],
       votes: 3,
       average: 4.2,
@@ -67,7 +69,12 @@ test("updates mutable Node data while preserving identity and creation time", ()
 
   const updated = updateNodeRecord(
     existing,
-    { title: "Updated", type: "solution", affectedLocations: ["Puget Sound"] },
+    {
+      title: "Updated",
+      type: "solution",
+      requestedChildTypes: ["evidence"],
+      affectedLocations: ["Puget Sound"],
+    },
     { now: "2026-08-23T19:00:00.000Z" },
   );
 
@@ -76,13 +83,24 @@ test("updates mutable Node data while preserving identity and creation time", ()
   assert.equal(updated.updatedAt, "2026-08-23T19:00:00.000Z");
   assert.equal(updated.title, "Updated");
   assert.equal(updated.type, "solution");
+  assert.deepEqual(updated.requestedChildTypes, ["evidence"]);
   assert.deepEqual(updated.affectedLocations, ["Puget Sound"]);
   assert.deepEqual(updated.parentIds, ["parent-1"]);
   assert.equal(updated.votes, 3);
   assert.equal(updated.average, 4.2);
 });
 
-test("requires title and semantic type", () => {
-  assert.throws(() => normalizeNodeInput({ title: "", type: "issue" }), /title is required/i);
-  assert.throws(() => normalizeNodeInput({ title: "Valid", type: "" }), /type is required/i);
+test("requires title, semantic type, and at least one requested feedback type", () => {
+  assert.throws(
+    () => normalizeNodeInput({ title: "", type: "issue", requestedChildTypes: ["solution"] }),
+    /title is required/i,
+  );
+  assert.throws(
+    () => normalizeNodeInput({ title: "Valid", type: "", requestedChildTypes: ["solution"] }),
+    /type is required/i,
+  );
+  assert.throws(
+    () => normalizeNodeInput({ title: "Valid", type: "issue", requestedChildTypes: [] }),
+    /requested feedback type is required/i,
+  );
 });
