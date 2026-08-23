@@ -118,6 +118,16 @@ function renderChildSummary(node, allNodes) {
   return summary;
 }
 
+const retiredPrototypeFixtureIds = [
+  "fixture-climate-resilience",
+  "fixture-transit-access",
+  "fixture-ferry-frequency",
+  "fixture-transit-question",
+  "fixture-heat-islands",
+  "fixture-tree-canopy",
+  "fixture-ferry-ridership-evidence",
+];
+
 export function mountNodeManager(graph) {
   const elements = {
     storageCard: document.querySelector(".storage-card"),
@@ -303,13 +313,15 @@ export function mountNodeManager(graph) {
       if (!response.ok) throw new Error(`Unable to load fixture data (${response.status}).`);
       const fixtures = await response.json();
 
-      // Remove a fixture retired from the prototype so reloading sample data
-      // updates existing IndexedDB state without requiring a full clear.
-      await graph.deleteNode("fixture-ferry-ridership-evidence");
+      // Remove only the known throwaway prototype fixtures. User-created Nodes
+      // and the recovered intentional Atlas dataset are left untouched.
+      for (const id of retiredPrototypeFixtureIds) {
+        await graph.deleteNode(id);
+      }
 
       const imported = await graph.importNodes(fixtures);
       await refresh();
-      showMessage(`${imported.length} sample Nodes loaded into IndexedDB.`);
+      showMessage(`${imported.length} recovered Atlas Nodes loaded into IndexedDB.`);
     } catch (error) {
       showMessage(error.message, true);
     }
