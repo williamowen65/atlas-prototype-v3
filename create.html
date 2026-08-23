@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Node · Atlas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+  <link id="app-styles" rel="stylesheet" href="./styles.css" />
+  <link id="page-styles" rel="stylesheet" href="./page-layout.css" />
+  <script>
+    const previewVersion = Date.now();
+    document.querySelector("#app-styles").href = `./styles.css?preview=${previewVersion}`;
+    document.querySelector("#page-styles").href = `./page-layout.css?preview=${previewVersion}`;
+  </script>
+</head>
+<body>
+  <main class="app-shell">
+    <nav class="app-nav" aria-label="Graph navigation">
+      <a class="app-nav-link" href="./index.html">Nodes</a>
+      <a class="app-nav-link active" href="./create.html" aria-current="page">Create Node</a>
+    </nav>
+
+    <header class="page-header compact-page-header">
+      <div>
+        <p class="eyebrow">Atlas Prototype V3 · PTT-58</p>
+        <h1 id="page-title">Create Node</h1>
+        <p id="page-lede" class="lede">Add a Graph Node through the Graph context API.</p>
+      </div>
+      <div class="storage-card" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <strong id="storage-status">Connecting to IndexedDB…</strong>
+          <span id="storage-detail">Local browser persistence</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="create-workspace">
+      <article class="panel create-panel">
+        <form id="node-form">
+          <input id="node-id" type="hidden" />
+
+          <label>
+            <span>Title</span>
+            <input id="node-title" name="title" required maxlength="160" placeholder="e.g. Improve regional transit" />
+          </label>
+
+          <label>
+            <span>Semantic type</span>
+            <select id="node-type" name="type" required>
+              <option></option>
+              <option value="issue">issue</option>
+              <option value="solution">solution</option>
+              <option value="question">question</option>
+              <option value="proposal">proposal</option>
+              <option value="evidence">evidence</option>
+              <option value="implementation">implementation</option>
+              <option value="challenge">challenge</option>
+            </select>
+            <small>Choose a suggestion or type a new semantic type.</small>
+          </label>
+
+          <label>
+            <span>Description</span>
+            <textarea id="node-description" name="description" rows="6" maxlength="2000" placeholder="Describe this contribution…"></textarea>
+          </label>
+
+          <label>
+            <span>Requested child types</span>
+            <select id="node-requested-child-types" name="requestedChildTypes" multiple>
+              <option value="issue">issue</option>
+              <option value="solution">solution</option>
+              <option value="question">question</option>
+              <option value="proposal">proposal</option>
+              <option value="evidence">evidence</option>
+              <option value="implementation">implementation</option>
+              <option value="challenge">challenge</option>
+            </select>
+            <small>Choose suggestions or enter new child types. Multiple values are allowed.</small>
+          </label>
+
+          <label>
+            <span>Affected locations</span>
+            <input id="node-affected-locations" name="affectedLocations" placeholder="Tacoma, Puget Sound" />
+            <small>Stored as contextual metadata, not hierarchy.</small>
+          </label>
+
+          <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+
+          <div class="form-actions create-form-actions">
+            <a class="button button-quiet button-link" href="./index.html">Cancel</a>
+            <button id="submit-node" class="button button-primary" type="submit">Create Node</button>
+          </div>
+        </form>
+      </article>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+  <script type="module">
+    import(`./src/app/createNode.js?preview=${Date.now()}`);
+  </script>
+</body>
+</html>
