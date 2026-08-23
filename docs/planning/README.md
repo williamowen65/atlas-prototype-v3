@@ -1,38 +1,45 @@
 # Atlas Planning
 
-This directory is the planning/documentation home for `atlas-prototype-v3`. It consolidates the planning notes that were previously kept in the Semantic Zooming / Hierarchical Aggregation prototype repository and the product decisions discovered while iterating on that prototype.
+This directory is the planning/documentation home for `atlas-prototype-v3`. It consolidates planning notes that were previously kept in the Semantic Zooming / Hierarchical Aggregation prototype repository together with the product decisions discovered while iterating on that prototype.
 
-The purpose is to keep product, graph-model, interaction, and rewrite decisions next to the repository that will use them. These Markdown files are intentionally organized so they can later be copied into the GitHub Wiki with minimal restructuring.
+The Markdown structure is intentionally Wiki-friendly so these pages can later be copied into the GitHub Wiki with minimal restructuring.
 
-## Documents
+## Documents and bounded contexts
 
 - [Atlas node data model](atlas-node-data-model.md)
 - [Before-rewrite checklist](before-rewrite-todo.md)
 - [Next prototype specification](next-prototype-spec.md)
-- [Graph core behavior](graph/core-behavior-spec.md)
+- [Graph and content model](graph/core-behavior-spec.md)
+- [Architecture](architecture/README.md)
 - [Product experience](product-experience/README.md)
-- [Hierarchy prototype lessons and decisions](product-experience/hierarchy-prototype-notes.md)
-- [Page and screen map](product-experience/page-and-screen-map.md)
+  - [Hierarchy prototype lessons and decisions](product-experience/hierarchy-prototype-notes.md)
+  - [Page and screen map](product-experience/page-and-screen-map.md)
+- [Voting](voting/README.md)
+- [Profiles and identity](profiles-and-identity/README.md)
+- [Moderation](moderation/README.md)
+- [Notifications](notifications/README.md)
+- [Security](security/README.md)
+- [Rewrite execution](rewrite/README.md)
 
 ## Current planning direction
 
 Atlas should be built around a generic recursive Node model rather than separate structural classes for Issue, Solution, Question, Challenge, and similar concepts. Semantic meaning should be data (`type` and related metadata), while the application works with a consistent Node abstraction.
 
-The hierarchy prototype has also established several product principles:
+The hierarchy prototype established several product principles:
 
 - Root categories should be broad and relatively stable so people look for where their contribution belongs rather than immediately creating a new root.
 - Specificity should emerge deeper in the hierarchy, where issue and solution branches may become very dense.
 - The same graph data should support both spatial/hierarchical and feed-style social-media presentations.
 - Location is a separate contextual dimension, not merely another `relates to` edge.
-- A post/node may have multiple affected locations.
+- A post/Node may have multiple affected locations.
 - Inter-layer context cards should preserve orientation as users descend the hierarchy.
 - Mobile and desktop should share the same semantic behavior even when presentation reflows.
 - Semantic/overview zoom should let users see more of the hierarchy while keeping important labels readable.
-- Leaf nodes should visibly communicate that no sub-issues or sub-solutions have been created yet rather than appearing broken or empty.
+- Leaf Nodes should visibly communicate that no sub-issues or sub-solutions have been created yet rather than appearing broken or empty.
 
 ## Planning coverage
 
-The earlier planning workspace used approximate documentation-coverage estimates rather than implementation-progress estimates. The last recorded rough coverage was:
+The earlier workspace used approximate documentation-coverage estimates rather than implementation-progress estimates. The last recorded rough coverage was:
 
 | Area | Approx. planning coverage |
 | --- | ---: |
@@ -46,7 +53,7 @@ The earlier planning workspace used approximate documentation-coverage estimates
 | Security | 20% |
 | Moderation | 10% |
 
-These numbers mean how much of the design surface has been deliberately explored and documented, not how complete the implementation is.
+These percentages measure how much of the design surface has been deliberately explored and documented, not how complete implementation is.
 
 ## Minimum design package
 
