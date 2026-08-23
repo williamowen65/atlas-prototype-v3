@@ -71,7 +71,9 @@ function chooseChildType(node, nodes, preferred = null) {
   const summaries = childTypeSummaries(node, nodes);
   if (!summaries.length) return null;
   if (preferred) {
-    const match = summaries.find((item) => item.type.toLowerCase() === String(preferred).toLowerCase());
+    const match = summaries.find(
+      (item) => item.type.toLowerCase() === String(preferred).toLowerCase(),
+    );
     if (match) return match.type;
   }
   return (summaries.find((item) => item.count > 0) ?? summaries[0]).type;
@@ -111,14 +113,25 @@ function wrapSvgText(textSelection, text, maxWidth, maxLines = 4) {
         tspan.text(current.length > 2 ? `${current.replace(/[\s,.]+$/, "")}…` : current);
         return lineNumber + 1;
       }
-      tspan = textSelection.append("tspan").attr("x", 0).attr("dy", `${lineHeight}em`).text(word);
+      tspan = textSelection.append("tspan")
+        .attr("x", 0)
+        .attr("dy", `${lineHeight}em`)
+        .text(word);
     }
   }
   return lineNumber + 1;
 }
 
-function renderVoronoiLayer(host, items, nodes, selectedId, onSelect) {
+function renderVoronoiLayer(
+  host,
+  items,
+  nodes,
+  selectedId,
+  onSelect,
+  { zoomKey, zoomState },
+) {
   host.replaceChildren();
+
   if (!items.length) {
     const empty = document.createElement("div");
     empty.className = "hierarchy-empty-layer";
@@ -128,7 +141,7 @@ function renderVoronoiLayer(host, items, nodes, selectedId, onSelect) {
   }
 
   const d3 = window.d3;
-  if (!d3?.voronoiTreemap) {
+  if (!d3?.voronoiTreemap || !d3?.zoom) {
     const error = document.createElement("div");
     error.className = "hierarchy-empty-layer";
     error.textContent = "The D3 hierarchy renderer could not be loaded.";
@@ -136,9 +149,19 @@ function renderVoronoiLayer(host, items, nodes, selectedId, onSelect) {
     return;
   }
 
-  const width = Math.max(320, host.clientWidth || 720);
-  const height = window.matchMedia("(max-width: 620px)").matches ? 320 : 400;
-  const proxies = items.map((item) => ({ item, weight: aggregateWeight(item.id, nodes) }));
+  const rect = host.getBoundingClientRect();
+  const width = Math.max(280, Math.round(rect.width || window.innerWidth || 720));
+  const height = Math.max(
+    260,
+    Math.round(rect.height || (window.innerWidth < 620
+      ? Math.min(width * 0.88, 360)
+      : Math.min(width * 0.42, 420))),
+  );
+
+  const proxies = items.map((item) => ({
+    item,
+    weight: aggregateWeight(item.id, nodes),
+  }));
   const root = d3.hierarchy({ children: proxies }).sum((entry) => entry.weight || 0);
   const polygon = [[0, 0], [width, 0], [width, height], [0, height]];
   const seed = items.reduce((sum, item) => {
@@ -146,18 +169,27 @@ function renderVoronoiLayer(host, items, nodes, selectedId, onSelect) {
     return sum;
   }, 2166136261) / 4294967296;
 
-  d3.voronoiTreemap().clip(polygon).prng(d3.randomLcg(seed || 0.42))(root);
+  d3.voronoiTreemap()
+    .clip(polygon)
+    .prng(d3.randomLcg(seed || 0.42))(root);
 
   const svg = d3.select(host)
     .append("svg")
     .attr("class", "hierarchy-svg")
     .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("width", width)
+    .attr("height", height)
     .attr("role", "group")
-    .attr("aria-label", "Graph hierarchy layer");
+    .attr("aria-label", "Graph hierarchy layer. Drag to pan and pinch or wheel to zoom.");
 
   ensureGradientDefs(svg);
 
-  const cells = svg.selectAll("g.hierarchy-cell")
+  // Only this inner group moves/scales. The page, card, toggle and breadcrumb
+  // stay at normal UI scale, matching the layer viewport behavior of the
+  // Semantic Zooming prototype.
+  const content = svg.append("g").attr("class", "hierarchy-layer-content");
+
+  const cells = content.selectAll("g.hierarchy-cell")
     .data(root.leaves(), (leaf) => leaf.data.item.id)
     .join("g")
     .attr("class", (leaf) => {
@@ -186,6 +218,7 @@ function renderVoronoiLayer(host, items, nodes, selectedId, onSelect) {
     const item = leaf.data.item;
     const area = Math.abs(d3.polygonArea(leaf.polygon));
     if (area < 1500) return;
+
     const selected = item.id === selectedId;
     const [cx, cy] = d3.polygonCentroid(leaf.polygon);
     const fontSize = Math.max(10, Math.min(18, Math.sqrt(area) / 8.4));
@@ -209,6 +242,23 @@ function renderVoronoiLayer(host, items, nodes, selectedId, onSelect) {
       .style("font-size", `${Math.max(9, fontSize * 0.68)}px`)
       .text(`${Number(item.votes ?? 0) || 0} votes · avg ${formatAverage(item.average)}`);
   });
+
+  const zoom = d3.zoom()
+    .scaleExtent([1, 6])
+    .extent([[0, 0], [width, height]])
+    .translateExtent([[0, 0], [width, height]])
+    .clickDistance(6)
+    .on("start", () => host.classList.add("is-interacting"))
+    .on("zoom", (event) => {
+      content.attr("transform", event.transform);
+      zoomState.set(zoomKey, event.transform);
+    })
+    .on("end", () => host.classList.remove("is-interacting"));
+
+  svg.call(zoom).on("dblclick.zoom", null);
+
+  const saved = zoomState.get(zoomKey);
+  if (saved) svg.call(zoom.transform, saved);
 }
 
 function renderBreadcrumb(route, onNavigate) {
@@ -241,10 +291,15 @@ function renderBreadcrumb(route, onNavigate) {
     });
     nav.appendChild(link);
   });
+
   return nav;
 }
 
-function renderContextCard(node, isCurrent, { onDelete, onToggle, expanded, hasChildren }) {
+function renderContextCard(
+  node,
+  isCurrent,
+  { onDelete, onToggle, expanded, hasChildren },
+) {
   const card = document.createElement("article");
   card.className = `node-card hierarchy-context-card ${isCurrent ? "is-current" : "is-ancestor"}`;
   card.id = `context-${node.id}`;
@@ -274,9 +329,19 @@ function renderContextCard(node, isCurrent, { onDelete, onToggle, expanded, hasC
   if (isCurrent) {
     const actionHost = document.createElement("div");
     actionHost.className = "node-actions";
-    const edit = makeIconButton(`Edit ${node.title}`, "M12 20h9 M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z", "node-icon-button-edit");
-    edit.addEventListener("click", () => { window.location.href = `./create.html?id=${encodeURIComponent(node.id)}`; });
-    const remove = makeIconButton(`Delete ${node.title}`, "M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v5 M14 11v5", "node-icon-button-delete");
+    const edit = makeIconButton(
+      `Edit ${node.title}`,
+      "M12 20h9 M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z",
+      "node-icon-button-edit",
+    );
+    edit.addEventListener("click", () => {
+      window.location.href = `./create.html?id=${encodeURIComponent(node.id)}`;
+    });
+    const remove = makeIconButton(
+      `Delete ${node.title}`,
+      "M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v5 M14 11v5",
+      "node-icon-button-delete",
+    );
     remove.addEventListener("click", () => onDelete(node));
     actionHost.append(edit, remove);
     body.appendChild(actionHost);
@@ -335,6 +400,7 @@ function renderContextCard(node, isCurrent, { onDelete, onToggle, expanded, hasC
 function renderToggle(node, nodes, selectedType, onSelectType) {
   const summaries = childTypeSummaries(node, nodes);
   if (!summaries.length) return null;
+
   const toggle = document.createElement("div");
   toggle.className = "hierarchy-child-toggle";
   toggle.setAttribute("role", "group");
@@ -344,16 +410,26 @@ function renderToggle(node, nodes, selectedType, onSelectType) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "hierarchy-child-toggle-button";
-    if (summary.type.toLowerCase() === String(selectedType ?? "").toLowerCase()) button.classList.add("is-active");
+    if (summary.type.toLowerCase() === String(selectedType ?? "").toLowerCase()) {
+      button.classList.add("is-active");
+    }
     if (summary.requested) button.classList.add("is-requested");
     button.textContent = `${summary.count} ${pluralizeType(summary.type, summary.count)}`;
     button.addEventListener("click", () => onSelectType(summary.type));
     toggle.appendChild(button);
   }
+
   return toggle;
 }
 
-function renderLayerBlock(parent, routeChild, type, nodes, onSelectChild) {
+function renderLayerBlock(
+  parent,
+  routeChild,
+  type,
+  nodes,
+  onSelectChild,
+  zoomState,
+) {
   const block = document.createElement("section");
   block.className = "hierarchy-layer-block";
 
@@ -366,10 +442,21 @@ function renderLayerBlock(parent, routeChild, type, nodes, onSelectChild) {
   block.append(heading, layer);
 
   const children = childrenForType(parent.id, type, nodes);
-  const selectedId = routeChild && responseTypeForParent(routeChild, parent.id).toLowerCase() === String(type).toLowerCase()
+  const selectedId = routeChild
+    && responseTypeForParent(routeChild, parent.id).toLowerCase() === String(type).toLowerCase()
     ? routeChild.id
     : null;
-  requestAnimationFrame(() => renderVoronoiLayer(layer, children, nodes, selectedId, onSelectChild));
+  const zoomKey = `${parent.id}::${String(type).toLowerCase()}`;
+
+  requestAnimationFrame(() => renderVoronoiLayer(
+    layer,
+    children,
+    nodes,
+    selectedId,
+    onSelectChild,
+    { zoomKey, zoomState },
+  ));
+
   return block;
 }
 
@@ -379,6 +466,7 @@ export async function mountHierarchyExplorer(graph, { host, showMessage }) {
   let selectedChildType = null;
   const expandedParents = new Set();
   const typeByParent = new Map();
+  const zoomState = new Map();
   let resizeTimer;
 
   function currentNode() {
@@ -395,7 +483,9 @@ export async function mountHierarchyExplorer(graph, { host, showMessage }) {
     if (!node) return;
     requestAnimationFrame(() => {
       document.querySelector(`#context-${CSS.escape(node.id)}`)?.scrollIntoView({
-        behavior: animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "smooth" : "auto",
+        behavior: animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "smooth"
+          : "auto",
         block: "start",
       });
     });
@@ -427,7 +517,11 @@ export async function mountHierarchyExplorer(graph, { host, showMessage }) {
     if (expandedParents.has(node.id)) expandedParents.delete(node.id);
     else expandedParents.add(node.id);
     render();
-    requestAnimationFrame(() => document.querySelector(`#context-${CSS.escape(node.id)}`)?.scrollIntoView({ block: "nearest" }));
+    requestAnimationFrame(() => {
+      document.querySelector(`#context-${CSS.escape(node.id)}`)?.scrollIntoView({
+        block: "nearest",
+      });
+    });
   }
 
   function setType(parent, type, isCurrent) {
@@ -462,14 +556,23 @@ export async function mountHierarchyExplorer(graph, { host, showMessage }) {
 
       if (!hasChildren || !expanded) return;
 
-      const routeChildType = routeChild ? responseTypeForParent(routeChild, routeNode.id) : null;
-      const preferred = typeByParent.get(routeNode.id) ?? (isCurrent ? selectedChildType : routeChildType);
+      const routeChildType = routeChild
+        ? responseTypeForParent(routeChild, routeNode.id)
+        : null;
+      const preferred = typeByParent.get(routeNode.id)
+        ?? (isCurrent ? selectedChildType : routeChildType);
       const activeType = chooseChildType(routeNode, nodes, preferred ?? routeChildType);
       if (!activeType) return;
+
       typeByParent.set(routeNode.id, activeType);
       if (isCurrent) selectedChildType = activeType;
 
-      const toggle = renderToggle(routeNode, nodes, activeType, (type) => setType(routeNode, type, isCurrent));
+      const toggle = renderToggle(
+        routeNode,
+        nodes,
+        activeType,
+        (type) => setType(routeNode, type, isCurrent),
+      );
       if (toggle) host.appendChild(toggle);
 
       host.appendChild(renderLayerBlock(
@@ -478,6 +581,7 @@ export async function mountHierarchyExplorer(graph, { host, showMessage }) {
         activeType,
         nodes,
         (child) => navigateTo([...route.slice(0, index + 1), child], null, true),
+        zoomState,
       ));
     });
   }
