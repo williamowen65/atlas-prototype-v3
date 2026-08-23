@@ -240,6 +240,19 @@ input:focus, textarea:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(
   line-height: 1.45;
   white-space: pre-wrap;
 }
+.node-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 12px;
+  color: #707987;
+  font-size: .8rem;
+  font-weight: 650;
+}
+.node-stats strong {
+  color: #303949;
+  font-weight: 850;
+}
 .node-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
 .pill {
   display: inline-flex;
