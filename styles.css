@@ -211,8 +211,9 @@ input:focus, textarea:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(
   box-shadow: 0 8px 22px rgba(28, 39, 64, 0.06);
 }
 .node-card-body {
+  display: flow-root;
   min-width: 0;
-  padding-right: 70px;
+  padding-right: 0;
 }
 .node-title-line {
   display: flex;
@@ -284,12 +285,12 @@ input:focus, textarea:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(
 .pill.location { background: #f2f4f7; color: #667085; }
 .node-id { margin-top: 11px; color: #9aa2af; font-size: .65rem; overflow-wrap: anywhere; }
 .node-actions {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+  float: right;
+  position: static;
   display: flex;
   align-items: center;
   gap: 4px;
+  margin: -4px -4px 8px 12px;
 }
 .node-icon-button {
   display: inline-flex;
@@ -377,7 +378,7 @@ pre {
   .data-heading { flex-direction: column; }
   .toolbar { width: 100%; justify-content: flex-start; }
   .node-card { padding: 16px; border-radius: 17px; }
-  .node-card-body { padding-right: 66px; }
-  .node-actions { top: 10px; right: 10px; }
+  .node-card-body { padding-right: 0; }
+  .node-actions { margin: -4px -4px 8px 10px; }
   .requested-child-tabs { width: 92%; }
 }
