@@ -5,7 +5,10 @@
     "title": "Improve regional climate resilience",
     "description": "A broad public issue used to exercise Node creation and local persistence.",
     "requestedChildTypes": ["issue", "solution"],
-    "affectedLocations": ["Puget Sound"]
+    "affectedLocations": ["Puget Sound"],
+    "parentIds": [],
+    "votes": 0,
+    "average": 0
   },
   {
     "id": "fixture-transit-access",
@@ -13,7 +16,10 @@
     "title": "Improve transit access between communities",
     "description": "A sample issue with multiple affected locations.",
     "requestedChildTypes": ["solution"],
-    "affectedLocations": ["Tacoma", "Gig Harbor"]
+    "affectedLocations": ["Tacoma", "Gig Harbor"],
+    "parentIds": [],
+    "votes": 0,
+    "average": 0
   },
   {
     "id": "fixture-ferry-frequency",
@@ -21,6 +27,42 @@
     "title": "Increase peak ferry frequency",
     "description": "A sample solution Node for testing semantic type data.",
     "requestedChildTypes": ["evidence"],
-    "affectedLocations": ["Puget Sound"]
+    "affectedLocations": ["Puget Sound"],
+    "parentIds": ["fixture-transit-access"],
+    "votes": 0,
+    "average": 0
+  },
+  {
+    "id": "fixture-heat-islands",
+    "type": "issue",
+    "title": "Reduce neighborhood heat islands",
+    "description": "A child issue used to demonstrate child counts by semantic type.",
+    "requestedChildTypes": ["solution"],
+    "affectedLocations": ["Tacoma"],
+    "parentIds": ["fixture-climate-resilience"],
+    "votes": 0,
+    "average": 0
+  },
+  {
+    "id": "fixture-tree-canopy",
+    "type": "solution",
+    "title": "Expand neighborhood tree canopy",
+    "description": "A child solution used to demonstrate requested-child counts.",
+    "requestedChildTypes": ["evidence"],
+    "affectedLocations": ["Puget Sound"],
+    "parentIds": ["fixture-climate-resilience"],
+    "votes": 0,
+    "average": 0
+  },
+  {
+    "id": "fixture-ferry-ridership-evidence",
+    "type": "evidence",
+    "title": "Measure peak ferry ridership demand",
+    "description": "A child evidence Node used to demonstrate a non-zero evidence count.",
+    "requestedChildTypes": [],
+    "affectedLocations": ["Puget Sound"],
+    "parentIds": ["fixture-ferry-frequency"],
+    "votes": 0,
+    "average": 0
   }
 ]
