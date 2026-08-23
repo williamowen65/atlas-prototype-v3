@@ -5,7 +5,6 @@ export function mountPostPage(graph) {
     storageCard: document.querySelector(".storage-card"),
     storageStatus: document.querySelector("#storage-status"),
     storageDetail: document.querySelector("#storage-detail"),
-    selectedPostNav: document.querySelector("#selected-post-nav"),
     message: document.querySelector("#post-message"),
     postView: document.querySelector("#post-view"),
   };
@@ -20,18 +19,20 @@ export function mountPostPage(graph) {
     try {
       await graph.ready();
       const storage = graph.storageInfo();
+      const storageDetail = `${storage.persistence}: ${storage.databaseName} · ${storage.objectStoreName}`;
       elements.storageCard.classList.add("ready");
-      elements.storageStatus.textContent = `${storage.persistence} connected`;
-      elements.storageDetail.textContent = `${storage.databaseName} · ${storage.objectStoreName}`;
+      elements.storageCard.title = storageDetail;
+      elements.storageStatus.textContent = "Local";
+      elements.storageDetail.textContent = storageDetail;
 
       await mountHierarchyExplorer(graph, {
         host: elements.postView,
-        selectedPostNav: elements.selectedPostNav,
         showMessage,
       });
     } catch (error) {
       elements.storageCard.classList.add("error");
-      elements.storageStatus.textContent = "Local storage unavailable";
+      elements.storageCard.title = error.message;
+      elements.storageStatus.textContent = "Storage error";
       elements.storageDetail.textContent = error.message;
       showMessage(error.message, true);
     }
