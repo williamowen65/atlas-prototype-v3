@@ -78,7 +78,7 @@ export function aggregateWeight(nodeId, nodes = [], visited = new Set()) {
     0,
   );
 
-  return Math.max(1, Math.sqrt(Math.max(0, votes)) + 1 + descendantWeight * 0.45);
+  return Math.max(1, 1 + Math.sqrt(Math.max(0, votes)) + descendantWeight);
 }
 
 export function postHrefForPath(path = [], childType = null) {
