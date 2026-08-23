@@ -1,0 +1,26 @@
+[
+  {
+    "id": "fixture-climate-resilience",
+    "type": "issue",
+    "title": "Improve regional climate resilience",
+    "description": "A broad public issue used to exercise Node creation and local persistence.",
+    "requestedChildTypes": ["issue", "solution"],
+    "affectedLocations": ["Puget Sound"]
+  },
+  {
+    "id": "fixture-transit-access",
+    "type": "issue",
+    "title": "Improve transit access between communities",
+    "description": "A sample issue with multiple affected locations.",
+    "requestedChildTypes": ["solution"],
+    "affectedLocations": ["Tacoma", "Gig Harbor"]
+  },
+  {
+    "id": "fixture-ferry-frequency",
+    "type": "solution",
+    "title": "Increase peak ferry frequency",
+    "description": "A sample solution Node for testing semantic type data.",
+    "requestedChildTypes": ["evidence"],
+    "affectedLocations": ["Puget Sound"]
+  }
+]
