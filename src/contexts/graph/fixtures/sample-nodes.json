@@ -37,7 +37,7 @@
     "type": "question",
     "title": "Which transit connections are most underserved?",
     "description": "An unrequested question child used to demonstrate that existing child types still appear in child counts.",
-    "requestedChildTypes": [],
+    "requestedChildTypes": ["answer"],
     "affectedLocations": ["Tacoma", "Gig Harbor"],
     "parentIds": ["fixture-transit-access"],
     "votes": 0,
@@ -62,17 +62,6 @@
     "requestedChildTypes": ["evidence"],
     "affectedLocations": ["Puget Sound"],
     "parentIds": ["fixture-climate-resilience"],
-    "votes": 0,
-    "average": 0
-  },
-  {
-    "id": "fixture-ferry-ridership-evidence",
-    "type": "evidence",
-    "title": "Measure peak ferry ridership demand",
-    "description": "A child evidence Node used to demonstrate a non-zero evidence count.",
-    "requestedChildTypes": [],
-    "affectedLocations": ["Puget Sound"],
-    "parentIds": ["fixture-ferry-frequency"],
     "votes": 0,
     "average": 0
   }
