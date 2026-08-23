@@ -33,18 +33,24 @@ test("creates a generic Node record without semantic subclasses", () => {
   assert.deepEqual(node.parentIds, []);
   assert.equal(node.votes, 0);
   assert.equal(node.average, 0);
+  assert.deepEqual(node.metadata, {});
   assert.equal(node.createdAt, node.updatedAt);
 });
 
-test("creates fixture-style relationship and voting metadata", () => {
+test("creates fixture-style relationship, voting, and generic metadata", () => {
   const node = createNodeRecord(
     {
-      title: "A solution",
-      type: "solution",
-      requestedChildTypes: ["evidence"],
+      title: "A relationship",
+      type: "relationship",
+      requestedChildTypes: ["challenge"],
       parentIds: ["parent-1", "parent-2"],
       votes: 12,
       average: 4.5,
+      metadata: {
+        relationshipType: "helps-address",
+        sourceId: "source-1",
+        targetId: "target-1",
+      },
     },
     { id: "node-child", now: "2026-08-23T18:00:00.000Z" },
   );
@@ -52,9 +58,14 @@ test("creates fixture-style relationship and voting metadata", () => {
   assert.deepEqual(node.parentIds, ["parent-1", "parent-2"]);
   assert.equal(node.votes, 12);
   assert.equal(node.average, 4.5);
+  assert.deepEqual(node.metadata, {
+    relationshipType: "helps-address",
+    sourceId: "source-1",
+    targetId: "target-1",
+  });
 });
 
-test("updates mutable Node data while preserving identity and creation time", () => {
+test("updates mutable Node data while preserving identity, creation time, and internal metadata", () => {
   const existing = createNodeRecord(
     {
       title: "Original",
@@ -63,6 +74,7 @@ test("updates mutable Node data while preserving identity and creation time", ()
       parentIds: ["parent-1"],
       votes: 3,
       average: 4.2,
+      metadata: { rootRole: "issue" },
     },
     { id: "node-2", now: "2026-08-23T18:00:00.000Z" },
   );
@@ -88,6 +100,7 @@ test("updates mutable Node data while preserving identity and creation time", ()
   assert.deepEqual(updated.parentIds, ["parent-1"]);
   assert.equal(updated.votes, 3);
   assert.equal(updated.average, 4.2);
+  assert.deepEqual(updated.metadata, { rootRole: "issue" });
 });
 
 test("requires title, semantic type, and at least one requested feedback type", () => {
