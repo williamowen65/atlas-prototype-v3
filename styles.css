@@ -227,6 +227,16 @@ input:focus, textarea:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(
   letter-spacing: .045em;
   text-transform: uppercase;
 }
+.node-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+.node-title-link:hover h3,
+.node-title-link:focus-visible h3 {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.node-title-link:focus-visible { outline: none; }
 .node-card h3 {
   margin: 0;
   color: #202938;
@@ -234,12 +244,20 @@ input:focus, textarea:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(
   line-height: 1.25;
   letter-spacing: -.015em;
 }
+.post-title {
+  margin: 0;
+  color: #202938;
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
 .node-description {
   margin: 8px 0 0;
   color: #697280;
   line-height: 1.45;
   white-space: pre-wrap;
 }
+.post-description { font-size: 1.02rem; }
 .node-stats {
   display: flex;
   flex-wrap: wrap;
