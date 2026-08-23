@@ -18,6 +18,7 @@ function normalizeNonNegativeNumber(value, fallback = 0) {
 export function normalizeNodeInput(input) {
   const title = String(input.title ?? "").trim();
   const type = String(input.type ?? "").trim();
+  const requestedChildTypes = normalizeList(input.requestedChildTypes);
 
   if (!title) {
     throw new Error("A Node title is required.");
@@ -27,11 +28,15 @@ export function normalizeNodeInput(input) {
     throw new Error("A semantic Node type is required.");
   }
 
+  if (requestedChildTypes.length === 0) {
+    throw new Error("At least one requested feedback type is required.");
+  }
+
   return {
     title,
     type,
     description: String(input.description ?? "").trim(),
-    requestedChildTypes: normalizeList(input.requestedChildTypes),
+    requestedChildTypes,
     affectedLocations: normalizeList(input.affectedLocations),
   };
 }
