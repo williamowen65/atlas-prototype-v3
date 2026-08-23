@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlas Graph Node Manager</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Atlas Prototype V3 · PTT-58</p>
+        <h1>Graph Node Manager</h1>
+        <p class="lede">Create and inspect Graph Nodes stored locally in this browser with IndexedDB.</p>
+      </div>
+      <div class="storage-card" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <strong id="storage-status">Connecting to IndexedDB…</strong>
+          <span id="storage-detail">Local browser persistence</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <article class="panel form-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Graph context</p>
+            <h2 id="form-title">Create Node</h2>
+          </div>
+          <button id="cancel-edit" class="button button-quiet" type="button" hidden>Cancel edit</button>
+        </div>
+
+        <form id="node-form">
+          <input id="node-id" type="hidden" />
+
+          <label>
+            <span>Title</span>
+            <input id="node-title" name="title" required maxlength="160" placeholder="e.g. Improve regional transit" />
+          </label>
+
+          <label>
+            <span>Semantic type</span>
+            <input id="node-type" name="type" required maxlength="80" placeholder="e.g. issue, solution, question" />
+            <small>Type is data, not a hard-coded Node subclass.</small>
+          </label>
+
+          <label>
+            <span>Description</span>
+            <textarea id="node-description" name="description" rows="5" maxlength="2000" placeholder="Describe this contribution…"></textarea>
+          </label>
+
+          <label>
+            <span>Requested child types</span>
+            <input id="node-requested-child-types" name="requestedChildTypes" placeholder="issue, solution" />
+            <small>Comma-separated for this prototype.</small>
+          </label>
+
+          <label>
+            <span>Affected locations</span>
+            <input id="node-affected-locations" name="affectedLocations" placeholder="Tacoma, Puget Sound" />
+            <small>Stored as contextual metadata, not hierarchy.</small>
+          </label>
+
+          <div class="form-actions">
+            <button id="submit-node" class="button button-primary" type="submit">Create Node</button>
+          </div>
+        </form>
+      </article>
+
+      <section class="panel data-panel">
+        <div class="panel-heading data-heading">
+          <div>
+            <p class="eyebrow">Stored locally</p>
+            <h2>Nodes <span id="node-count" class="count-badge">0</span></h2>
+          </div>
+          <div class="toolbar">
+            <button id="load-fixtures" class="button button-secondary" type="button">Load sample data</button>
+            <button id="toggle-raw" class="button button-secondary" type="button" aria-expanded="false">Show raw data</button>
+            <button id="clear-all" class="button button-danger" type="button">Clear all</button>
+          </div>
+        </div>
+
+        <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+
+        <div id="node-list" class="node-list"></div>
+
+        <section id="raw-data-panel" class="raw-data-panel" hidden>
+          <div class="raw-heading">
+            <h3>IndexedDB data</h3>
+            <span>Current Node records as JSON</span>
+          </div>
+          <pre id="raw-data">[]</pre>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script type="module" src="./src/app/main.js"></script>
+</body>
+</html>
