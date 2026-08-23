@@ -59,6 +59,103 @@
   margin-bottom: 22px;
 }
 
+/* The hierarchy page follows the compact toolbar used by the reference
+   Semantic Zooming prototype: quiet identity + navigation, then content. */
+.post-app-shell {
+  padding-top: 12px;
+}
+
+.post-toolbar-shell {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 62px;
+  margin-bottom: 8px;
+  padding: 8px 4px 10px;
+  background: linear-gradient(180deg, rgba(245,247,251,.96), rgba(245,247,251,.72) 78%, rgba(245,247,251,0));
+}
+
+.post-toolbar-title {
+  min-width: 0;
+}
+
+.post-toolbar-title strong,
+.post-toolbar-title span {
+  display: block;
+  white-space: nowrap;
+}
+
+.post-toolbar-title strong {
+  color: #263447;
+  font-size: .92rem;
+  line-height: 1.15;
+}
+
+.post-toolbar-title span {
+  margin-top: 3px;
+  color: #7b8492;
+  font-size: .64rem;
+  font-weight: 650;
+}
+
+.post-toolbar-shell .app-nav {
+  justify-self: start;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  gap: 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  scrollbar-width: none;
+}
+
+.post-toolbar-shell .app-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.post-toolbar-shell .app-nav-link {
+  min-height: 32px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: .76rem;
+  font-weight: 760;
+}
+
+.post-toolbar-shell .app-nav-link:hover,
+.post-toolbar-shell .app-nav-link:focus-visible {
+  background: rgba(38,52,71,.07);
+}
+
+.post-storage-status {
+  justify-self: end;
+  min-width: 0;
+  padding: 5px 7px;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.6);
+  box-shadow: none;
+}
+
+.post-storage-status .status-dot {
+  width: 7px;
+  height: 7px;
+}
+
+.post-storage-status strong {
+  color: #667085;
+  font-size: .67rem;
+  line-height: 1;
+}
+
+.post-storage-status #storage-detail {
+  display: none;
+}
+
 .nodes-workspace {
   display: block;
 }
@@ -214,6 +311,46 @@
 
   .post-nav .app-nav-link {
     flex: 0 0 auto;
+  }
+
+  .post-app-shell {
+    padding-top: 8px;
+  }
+
+  .post-toolbar-shell {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    gap: 4px 8px;
+    min-height: 82px;
+    margin-bottom: 4px;
+    padding: 6px 2px 8px;
+  }
+
+  .post-toolbar-title strong {
+    font-size: .86rem;
+  }
+
+  .post-toolbar-title span {
+    font-size: .6rem;
+  }
+
+  .post-toolbar-shell .post-nav {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .post-toolbar-shell .app-nav-link {
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: .73rem;
+  }
+
+  .post-storage-status {
+    padding: 4px 6px;
+  }
+
+  .post-storage-status strong {
+    font-size: .63rem;
   }
 
   .node-child-summary {
