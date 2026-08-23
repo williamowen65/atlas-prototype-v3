@@ -9,15 +9,6 @@ function formatSemanticType(value) {
   return String(value ?? "").trim().toUpperCase();
 }
 
-function pluralizeType(type, count) {
-  const value = String(type ?? "").trim();
-  if (count === 1 || !value) return value;
-  if (value.toLowerCase() === "evidence") return value;
-  if (/[^aeiou]y$/i.test(value)) return `${value.slice(0, -1)}ies`;
-  if (/(s|x|z|ch|sh)$/i.test(value)) return `${value}es`;
-  return `${value}s`;
-}
-
 function formatAverage(value) {
   const number = Number(value ?? 0);
   return Number.isFinite(number) ? number.toFixed(1) : "0.0";
@@ -75,34 +66,6 @@ export function mountNodeManager(graph) {
     }, 4200);
   }
 
-  function childCountForType(node, requestedType, allNodes) {
-    const normalizedType = String(requestedType).trim().toLowerCase();
-    return allNodes.filter((candidate) => {
-      const parentIds = candidate.parentIds ?? [];
-      return parentIds.includes(node.id)
-        && String(candidate.type ?? "").trim().toLowerCase() === normalizedType;
-    }).length;
-  }
-
-  function renderRequestedChildTypes(node, allNodes) {
-    const requestedTypes = node.requestedChildTypes ?? [];
-    if (requestedTypes.length === 0) return null;
-
-    const tabs = document.createElement("div");
-    tabs.className = "requested-child-tabs";
-    tabs.setAttribute("aria-label", "Requested child types");
-
-    for (const requestedType of requestedTypes) {
-      const count = childCountForType(node, requestedType, allNodes);
-      const tab = document.createElement("span");
-      tab.className = "requested-child-tab";
-      tab.textContent = `${count} ${pluralizeType(requestedType, count)}`;
-      tabs.appendChild(tab);
-    }
-
-    return tabs;
-  }
-
   function renderStats(node) {
     const stats = document.createElement("div");
     stats.className = "node-stats";
@@ -121,7 +84,7 @@ export function mountNodeManager(graph) {
     return stats;
   }
 
-  function renderNodeCard(node, allNodes) {
+  function renderNodeCard(node) {
     const entry = document.createElement("div");
     entry.className = "node-entry";
 
@@ -138,10 +101,16 @@ export function mountNodeManager(graph) {
     typeLabel.className = "node-type-label";
     typeLabel.textContent = formatSemanticType(node.type);
 
+    const postLink = document.createElement("a");
+    postLink.className = "node-title-link";
+    postLink.href = `./post.html?id=${encodeURIComponent(node.id)}`;
+    postLink.setAttribute("aria-label", `Open post: ${node.title}`);
+
     const heading = document.createElement("h3");
     heading.textContent = node.title;
+    postLink.appendChild(heading);
 
-    titleLine.append(typeLabel, heading);
+    titleLine.append(typeLabel, postLink);
     body.appendChild(titleLine);
 
     if (node.description) {
@@ -183,10 +152,6 @@ export function mountNodeManager(graph) {
     actions.append(edit, remove);
     card.append(body, actions);
     entry.appendChild(card);
-
-    const requestedTabs = renderRequestedChildTypes(node, allNodes);
-    if (requestedTabs) entry.appendChild(requestedTabs);
-
     return entry;
   }
 
@@ -208,7 +173,7 @@ export function mountNodeManager(graph) {
       return;
     }
 
-    for (const node of nodes) elements.nodeList.appendChild(renderNodeCard(node, nodes));
+    for (const node of nodes) elements.nodeList.appendChild(renderNodeCard(node));
   }
 
   async function deleteNode(node) {
