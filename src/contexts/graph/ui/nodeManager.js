@@ -24,6 +24,32 @@ function formatSemanticType(value) {
   return String(value ?? "").trim().toUpperCase();
 }
 
+function pluralizeType(type, count) {
+  const value = String(type ?? "").trim();
+  if (count === 1 || !value) {
+    return value;
+  }
+
+  if (value.toLowerCase() === "evidence") {
+    return value;
+  }
+
+  if (/[^aeiou]y$/i.test(value)) {
+    return `${value.slice(0, -1)}ies`;
+  }
+
+  if (/(s|x|z|ch|sh)$/i.test(value)) {
+    return `${value}es`;
+  }
+
+  return `${value}s`;
+}
+
+function formatAverage(value) {
+  const number = Number(value ?? 0);
+  return Number.isFinite(number) ? number.toFixed(1) : "0.0";
+}
+
 function createIconButton({ label, pathData, extraClass = "" }) {
   const button = document.createElement("button");
   button.type = "button";
@@ -151,7 +177,16 @@ export function mountNodeManager(graph) {
     elements.cancelEdit.hidden = true;
   }
 
-  function renderRequestedChildTypes(node) {
+  function childCountForType(node, requestedType, allNodes) {
+    const normalizedType = String(requestedType).trim().toLowerCase();
+    return allNodes.filter((candidate) => {
+      const parentIds = candidate.parentIds ?? [];
+      return parentIds.includes(node.id)
+        && String(candidate.type ?? "").trim().toLowerCase() === normalizedType;
+    }).length;
+  }
+
+  function renderRequestedChildTypes(node, allNodes) {
     const requestedTypes = node.requestedChildTypes ?? [];
     if (requestedTypes.length === 0) {
       return null;
@@ -162,16 +197,35 @@ export function mountNodeManager(graph) {
     tabs.setAttribute("aria-label", "Requested child types");
 
     for (const requestedType of requestedTypes) {
+      const count = childCountForType(node, requestedType, allNodes);
       const tab = document.createElement("span");
       tab.className = "requested-child-tab";
-      tab.textContent = requestedType;
+      tab.textContent = `${count} ${pluralizeType(requestedType, count)}`;
       tabs.appendChild(tab);
     }
 
     return tabs;
   }
 
-  function renderNodeCard(node) {
+  function renderStats(node) {
+    const stats = document.createElement("div");
+    stats.className = "node-stats";
+
+    const votes = document.createElement("span");
+    const voteValue = document.createElement("strong");
+    voteValue.textContent = String(Number(node.votes ?? 0) || 0);
+    votes.append(voteValue, " votes");
+
+    const average = document.createElement("span");
+    const averageValue = document.createElement("strong");
+    averageValue.textContent = formatAverage(node.average);
+    average.append(averageValue, " avg");
+
+    stats.append(votes, average);
+    return stats;
+  }
+
+  function renderNodeCard(node, allNodes) {
     const entry = document.createElement("div");
     entry.className = "node-entry";
 
@@ -200,6 +254,8 @@ export function mountNodeManager(graph) {
       description.textContent = node.description;
       body.appendChild(description);
     }
+
+    body.appendChild(renderStats(node));
 
     const locations = node.affectedLocations ?? [];
     if (locations.length > 0) {
@@ -237,7 +293,7 @@ export function mountNodeManager(graph) {
     card.append(body, actions);
     entry.appendChild(card);
 
-    const requestedTabs = renderRequestedChildTypes(node);
+    const requestedTabs = renderRequestedChildTypes(node, allNodes);
     if (requestedTabs) {
       entry.appendChild(requestedTabs);
     }
@@ -264,7 +320,7 @@ export function mountNodeManager(graph) {
     }
 
     for (const node of nodes) {
-      elements.nodeList.appendChild(renderNodeCard(node));
+      elements.nodeList.appendChild(renderNodeCard(node, nodes));
     }
   }
 
