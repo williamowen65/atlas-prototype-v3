@@ -184,6 +184,28 @@ export function mountNodeManager(graph) {
     body.className = "node-card-body";
     body.style.paddingBottom = "32px";
 
+    const actions = document.createElement("div");
+    actions.className = "node-actions";
+
+    const edit = createIconButton({
+      label: `Edit ${node.title}`,
+      pathData: "M12 20h9 M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z",
+      extraClass: "node-icon-button-edit",
+    });
+    edit.addEventListener("click", () => {
+      window.location.href = `./create.html?id=${encodeURIComponent(node.id)}`;
+    });
+
+    const remove = createIconButton({
+      label: `Delete ${node.title}`,
+      pathData: "M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v5 M14 11v5",
+      extraClass: "node-icon-button-delete",
+    });
+    remove.addEventListener("click", () => deleteNode(node));
+
+    actions.append(edit, remove);
+    body.appendChild(actions);
+
     const titleLine = document.createElement("div");
     titleLine.className = "node-title-line";
 
@@ -220,25 +242,6 @@ export function mountNodeManager(graph) {
       body.appendChild(meta);
     }
 
-    const actions = document.createElement("div");
-    actions.className = "node-actions";
-
-    const edit = createIconButton({
-      label: `Edit ${node.title}`,
-      pathData: "M12 20h9 M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z",
-      extraClass: "node-icon-button-edit",
-    });
-    edit.addEventListener("click", () => {
-      window.location.href = `./create.html?id=${encodeURIComponent(node.id)}`;
-    });
-
-    const remove = createIconButton({
-      label: `Delete ${node.title}`,
-      pathData: "M3 6h18 M8 6V4h8v2 M19 6l-1 14H6L5 6 M10 11v5 M14 11v5",
-      extraClass: "node-icon-button-delete",
-    });
-    remove.addEventListener("click", () => deleteNode(node));
-
     const childSummary = renderChildSummary(node, allNodes);
     if (childSummary) {
       card.classList.add("has-child-summary");
@@ -247,8 +250,7 @@ export function mountNodeManager(graph) {
 
     const openPost = createOpenPostLink(node);
 
-    actions.append(edit, remove);
-    card.append(body, actions);
+    card.appendChild(body);
     if (childSummary) card.appendChild(childSummary);
     card.appendChild(openPost);
     entry.appendChild(card);
