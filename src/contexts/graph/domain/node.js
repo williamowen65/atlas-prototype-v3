@@ -15,6 +15,14 @@ function normalizeNonNegativeNumber(value, fallback = 0) {
   return Number.isFinite(number) && number >= 0 ? number : fallback;
 }
 
+function normalizeMetadata(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  return { ...value };
+}
+
 export function normalizeNodeInput(input) {
   const title = String(input.title ?? "").trim();
   const type = String(input.type ?? "").trim();
@@ -51,6 +59,7 @@ export function createNodeRecord(input, { id, now } = {}) {
     parentIds: normalizeList(input.parentIds),
     votes: normalizeNonNegativeNumber(input.votes),
     average: normalizeNonNegativeNumber(input.average),
+    metadata: normalizeMetadata(input.metadata),
     createdAt: timestamp,
     updatedAt: timestamp,
   };
@@ -77,6 +86,10 @@ export function updateNodeRecord(existingNode, input, { now } = {}) {
 
   if (Object.prototype.hasOwnProperty.call(input, "average")) {
     updated.average = normalizeNonNegativeNumber(input.average);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, "metadata")) {
+    updated.metadata = normalizeMetadata(input.metadata);
   }
 
   return updated;
