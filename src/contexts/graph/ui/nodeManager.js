@@ -1,3 +1,9 @@
+import {
+  childTypeSummaries,
+  defaultPathForNode,
+  postHrefForPath,
+} from "../application/hierarchyProjection.js";
+
 function createPill(text, extraClass = "") {
   const pill = document.createElement("span");
   pill.className = `pill ${extraClass}`.trim();
@@ -21,36 +27,6 @@ function pluralizeType(type, count) {
 function formatAverage(value) {
   const number = Number(value ?? 0);
   return Number.isFinite(number) ? number.toFixed(1) : "0.0";
-}
-
-function childTypeSummaries(node, allNodes) {
-  const summaries = new Map();
-
-  for (const requestedType of node.requestedChildTypes ?? []) {
-    const type = String(requestedType ?? "").trim();
-    if (!type) continue;
-    const key = type.toLowerCase();
-    if (!summaries.has(key)) {
-      summaries.set(key, { type, count: 0, requested: true });
-    } else {
-      summaries.get(key).requested = true;
-    }
-  }
-
-  for (const candidate of allNodes) {
-    if (!(candidate.parentIds ?? []).includes(node.id)) continue;
-
-    const type = String(candidate.type ?? "").trim();
-    if (!type) continue;
-    const key = type.toLowerCase();
-
-    if (!summaries.has(key)) {
-      summaries.set(key, { type, count: 0, requested: false });
-    }
-    summaries.get(key).count += 1;
-  }
-
-  return Array.from(summaries.values());
 }
 
 function appendIcon(element, pathData) {
@@ -81,10 +57,10 @@ function createIconButton({ label, pathData, extraClass = "" }) {
   return button;
 }
 
-function createOpenPostLink(node) {
+function createOpenPostLink(node, route) {
   const link = document.createElement("a");
   link.className = "node-icon-button node-open-post-link";
-  link.href = `./post.html?id=${encodeURIComponent(node.id)}`;
+  link.href = postHrefForPath(route);
   link.setAttribute("aria-label", `Open post: ${node.title}`);
   link.title = "Open post";
   link.style.position = "absolute";
@@ -94,6 +70,30 @@ function createOpenPostLink(node) {
 
   appendIcon(link, "M5 12h14 M13 6l6 6-6 6");
   return link;
+}
+
+function renderParentBreadcrumb(route) {
+  if (route.length < 2) return null;
+  const nav = document.createElement("nav");
+  nav.className = "feed-card-breadcrumb";
+  nav.setAttribute("aria-label", "Parent hierarchy");
+
+  route.slice(0, -1).forEach((ancestor, index) => {
+    if (index > 0) {
+      const separator = document.createElement("span");
+      separator.textContent = "›";
+      separator.className = "feed-card-breadcrumb-separator";
+      nav.appendChild(separator);
+    }
+
+    const link = document.createElement("a");
+    const ancestorPath = route.slice(0, index + 1);
+    link.href = postHrefForPath(ancestorPath);
+    link.textContent = ancestor.title;
+    nav.appendChild(link);
+  });
+
+  return nav;
 }
 
 function renderChildSummary(node, allNodes) {
@@ -174,6 +174,7 @@ export function mountNodeManager(graph) {
   }
 
   function renderNodeCard(node, allNodes) {
+    const route = defaultPathForNode(node.id, allNodes);
     const entry = document.createElement("div");
     entry.className = "node-entry";
 
@@ -206,6 +207,9 @@ export function mountNodeManager(graph) {
     actions.append(edit, remove);
     body.appendChild(actions);
 
+    const breadcrumb = renderParentBreadcrumb(route);
+    if (breadcrumb) body.appendChild(breadcrumb);
+
     const titleLine = document.createElement("div");
     titleLine.className = "node-title-line";
 
@@ -215,7 +219,7 @@ export function mountNodeManager(graph) {
 
     const postLink = document.createElement("a");
     postLink.className = "node-title-link";
-    postLink.href = `./post.html?id=${encodeURIComponent(node.id)}`;
+    postLink.href = postHrefForPath(route);
     postLink.setAttribute("aria-label", `Open post: ${node.title}`);
 
     const heading = document.createElement("h3");
@@ -248,7 +252,7 @@ export function mountNodeManager(graph) {
       body.style.paddingBottom = "54px";
     }
 
-    const openPost = createOpenPostLink(node);
+    const openPost = createOpenPostLink(node, route);
 
     card.appendChild(body);
     if (childSummary) card.appendChild(childSummary);
@@ -315,8 +319,6 @@ export function mountNodeManager(graph) {
       if (!response.ok) throw new Error(`Unable to load fixture data (${response.status}).`);
       const fixtures = await response.json();
 
-      // Remove only the known throwaway prototype fixtures. User-created Nodes
-      // and the recovered intentional Atlas dataset are left untouched.
       for (const id of retiredPrototypeFixtureIds) {
         await graph.deleteNode(id);
       }
