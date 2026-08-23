@@ -48,28 +48,49 @@ function createIconButton({ label, pathData, extraClass = "" }) {
   return button;
 }
 
-function childCountForType(node, requestedType, allNodes) {
-  const normalizedType = String(requestedType).trim().toLowerCase();
-  return allNodes.filter((candidate) => {
-    const parentIds = candidate.parentIds ?? [];
-    return parentIds.includes(node.id)
-      && String(candidate.type ?? "").trim().toLowerCase() === normalizedType;
-  }).length;
+function childTypeSummaries(node, allNodes) {
+  const summaries = new Map();
+
+  for (const requestedType of node.requestedChildTypes ?? []) {
+    const type = String(requestedType ?? "").trim();
+    if (!type) continue;
+    const key = type.toLowerCase();
+    if (!summaries.has(key)) {
+      summaries.set(key, { type, count: 0, requested: true });
+    } else {
+      summaries.get(key).requested = true;
+    }
+  }
+
+  for (const candidate of allNodes) {
+    if (!(candidate.parentIds ?? []).includes(node.id)) continue;
+
+    const type = String(candidate.type ?? "").trim();
+    if (!type) continue;
+    const key = type.toLowerCase();
+
+    if (!summaries.has(key)) {
+      summaries.set(key, { type, count: 0, requested: false });
+    }
+    summaries.get(key).count += 1;
+  }
+
+  return Array.from(summaries.values());
 }
 
-function renderRequestedChildTypes(node, allNodes) {
-  const requestedTypes = node.requestedChildTypes ?? [];
-  if (requestedTypes.length === 0) return null;
+function renderChildTypeTabs(node, allNodes) {
+  const summaries = childTypeSummaries(node, allNodes);
+  if (summaries.length === 0) return null;
 
   const tabs = document.createElement("div");
   tabs.className = "requested-child-tabs";
-  tabs.setAttribute("aria-label", "Requested child types");
+  tabs.setAttribute("aria-label", "Child types");
 
-  for (const requestedType of requestedTypes) {
-    const count = childCountForType(node, requestedType, allNodes);
+  for (const item of summaries) {
     const tab = document.createElement("span");
     tab.className = "requested-child-tab";
-    tab.textContent = `${count} ${pluralizeType(requestedType, count)}`;
+    if (item.requested) tab.classList.add("requested");
+    tab.textContent = `${item.count} ${pluralizeType(item.type, item.count)}`;
     tabs.appendChild(tab);
   }
 
@@ -199,8 +220,8 @@ export function mountPostPage(graph) {
     card.append(body, actions);
     entry.appendChild(card);
 
-    const requestedTabs = renderRequestedChildTypes(node, allNodes);
-    if (requestedTabs) entry.appendChild(requestedTabs);
+    const childTabs = renderChildTypeTabs(node, allNodes);
+    if (childTabs) entry.appendChild(childTabs);
 
     elements.postView.replaceChildren(entry);
   }
