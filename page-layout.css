@@ -61,7 +61,7 @@
 
 /* Compact hierarchy toolbar, based on the reference Semantic Zooming header. */
 .post-app-shell {
-  padding-top: 12px;
+  padding-top: 8px;
 }
 
 .post-toolbar-shell {
@@ -69,10 +69,10 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
-  min-height: 62px;
-  margin-bottom: 2px;
-  padding: 8px 4px 10px;
-  background: linear-gradient(180deg, rgba(245,247,251,.96), rgba(245,247,251,.72) 78%, rgba(245,247,251,0));
+  min-height: 58px;
+  margin-bottom: 0;
+  padding: 6px 4px 8px;
+  background: linear-gradient(180deg, rgba(245,247,251,.96), rgba(245,247,251,.7) 80%, rgba(245,247,251,0));
 }
 
 .post-toolbar-title {
@@ -87,14 +87,14 @@
 
 .post-toolbar-title strong {
   color: #263447;
-  font-size: .92rem;
+  font-size: .9rem;
   line-height: 1.15;
 }
 
 .post-toolbar-title span {
-  margin-top: 3px;
+  margin-top: 2px;
   color: #7b8492;
-  font-size: .64rem;
+  font-size: .62rem;
   font-weight: 650;
 }
 
@@ -117,10 +117,10 @@
 }
 
 .post-toolbar-shell .app-nav-link {
-  min-height: 32px;
-  padding: 6px 9px;
+  min-height: 30px;
+  padding: 5px 8px;
   border-radius: 999px;
-  font-size: .76rem;
+  font-size: .75rem;
   font-weight: 760;
 }
 
@@ -132,11 +132,11 @@
 .post-storage-status {
   justify-self: end;
   min-width: 0;
-  padding: 5px 7px;
-  gap: 6px;
+  padding: 4px 6px;
+  gap: 5px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255,255,255,.6);
+  background: rgba(255,255,255,.56);
   box-shadow: none;
 }
 
@@ -147,7 +147,7 @@
 
 .post-storage-status strong {
   color: #667085;
-  font-size: .67rem;
+  font-size: .65rem;
   line-height: 1;
 }
 
@@ -313,24 +313,24 @@
   }
 
   .post-app-shell {
-    padding-top: 6px;
+    padding-top: 4px;
   }
 
   .post-toolbar-shell {
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto auto;
-    gap: 2px 8px;
-    min-height: 74px;
+    gap: 1px 8px;
+    min-height: 66px;
     margin-bottom: 0;
-    padding: 4px 2px 6px;
+    padding: 3px 2px 4px;
   }
 
   .post-toolbar-title strong {
-    font-size: .86rem;
+    font-size: .82rem;
   }
 
   .post-toolbar-title span {
-    font-size: .6rem;
+    font-size: .58rem;
   }
 
   .post-toolbar-shell .post-nav {
@@ -339,17 +339,17 @@
   }
 
   .post-toolbar-shell .app-nav-link {
-    min-height: 28px;
-    padding: 4px 8px;
-    font-size: .72rem;
+    min-height: 26px;
+    padding: 3px 7px;
+    font-size: .7rem;
   }
 
   .post-storage-status {
-    padding: 4px 6px;
+    padding: 3px 5px;
   }
 
   .post-storage-status strong {
-    font-size: .63rem;
+    font-size: .6rem;
   }
 
   .node-child-summary {
