@@ -33,6 +33,17 @@
     "average": 0
   },
   {
+    "id": "fixture-transit-question",
+    "type": "question",
+    "title": "Which transit connections are most underserved?",
+    "description": "An unrequested question child used to demonstrate that existing child types still appear in child counts.",
+    "requestedChildTypes": [],
+    "affectedLocations": ["Tacoma", "Gig Harbor"],
+    "parentIds": ["fixture-transit-access"],
+    "votes": 0,
+    "average": 0
+  },
+  {
     "id": "fixture-heat-islands",
     "type": "issue",
     "title": "Reduce neighborhood heat islands",
