@@ -111,14 +111,26 @@ export function mountCreateNodePage(graph) {
 
   elements.form.addEventListener("submit", async (event) => {
     event.preventDefault();
+
+    const input = readForm();
+    if (input.requestedChildTypes.length === 0) {
+      showMessage("Request at least one kind of feedback before saving this post.", true);
+      if (select2Ready) {
+        $(elements.requestedChildTypes).select2("open");
+      } else {
+        elements.requestedChildTypes.focus();
+      }
+      return;
+    }
+
     elements.submit.disabled = true;
 
     try {
       const id = elements.nodeId.value;
       if (id) {
-        await graph.updateNode(id, readForm());
+        await graph.updateNode(id, input);
       } else {
-        await graph.createNode(readForm());
+        await graph.createNode(input);
       }
       window.location.href = "./index.html";
     } catch (error) {
