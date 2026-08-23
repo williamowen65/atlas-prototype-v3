@@ -1,4 +1,4 @@
-import { createNodeRecord, normalizeNodeInput, updateNodeRecord } from "../domain/node.js";
+import { createNodeRecord, updateNodeRecord } from "../domain/node.js";
 
 export class GraphService {
   constructor(nodeRepository) {
@@ -47,12 +47,11 @@ export class GraphService {
     const imported = [];
     for (const input of nodes) {
       const timestamp = new Date().toISOString();
-      const node = {
+      const node = createNodeRecord(input, {
         id: input.id || crypto.randomUUID(),
-        ...normalizeNodeInput(input),
-        createdAt: input.createdAt || timestamp,
-        updatedAt: timestamp,
-      };
+        now: input.createdAt || timestamp,
+      });
+      node.updatedAt = timestamp;
       await this.nodeRepository.save(node);
       imported.push(node);
     }
