@@ -42,6 +42,30 @@ export function resolvePathIds(pathIds = [], selectedId, nodes = []) {
   return path;
 }
 
+// Preserve the contextual response appearances from Semantic Zooming commit
+// 9e748de. A shared relationship Node can belong to different response tabs
+// depending on which parent route is being viewed.
+const referenceResponseTypeByParent = {
+  "relationship-surplus-food-helps-homelessness": {
+    "solution-redirect-surplus-food": "yay",
+    "root-homelessness": "solution",
+  },
+  "relationship-social-media-implemented-by-atlas": {
+    "solution-social-media-collective-problem-solving": "implementation",
+    "root-atlas-public-think-tank": "connection",
+  },
+};
+
+export function responseTypeForParent(child, parentId) {
+  const explicit = child?.metadata?.responseTypeByParent?.[parentId];
+  if (explicit) return String(explicit).trim();
+
+  const referenced = referenceResponseTypeByParent[child?.id]?.[parentId];
+  if (referenced) return referenced;
+
+  return String(child?.type ?? "").trim();
+}
+
 export function childTypeSummaries(node, nodes = []) {
   const summaries = new Map();
 
@@ -53,7 +77,7 @@ export function childTypeSummaries(node, nodes = []) {
   }
 
   for (const child of childrenFor(node?.id, nodes)) {
-    const type = String(child.type ?? "").trim();
+    const type = responseTypeForParent(child, node.id);
     if (!type) continue;
     const key = type.toLowerCase();
     const summary = summaries.get(key) ?? { type, count: 0, requested: false };
@@ -64,21 +88,22 @@ export function childTypeSummaries(node, nodes = []) {
   return Array.from(summaries.values());
 }
 
-export function aggregateWeight(nodeId, nodes = [], visited = new Set()) {
-  if (visited.has(nodeId)) return 0;
-  const nextVisited = new Set(visited);
-  nextVisited.add(nodeId);
+export function childrenForType(parentId, type, nodes = []) {
+  const wanted = String(type ?? "").trim().toLowerCase();
+  return childrenFor(parentId, nodes).filter(
+    (child) => responseTypeForParent(child, parentId).toLowerCase() === wanted,
+  );
+}
+
+// Match commit 9e748de: polygon area reflects only the node's own support,
+// not descendant count/depth. With the recovered demo's zeroed voting data,
+// siblings therefore start with equal weight.
+export function aggregateWeight(nodeId, nodes = []) {
   const node = nodes.find((candidate) => candidate.id === nodeId);
   if (!node) return 1;
-
-  const children = childrenFor(nodeId, nodes);
-  const votes = Number(node.votes ?? 0);
-  const descendantWeight = children.reduce(
-    (sum, child) => sum + aggregateWeight(child.id, nodes, nextVisited),
-    0,
-  );
-
-  return Math.max(1, 1 + Math.sqrt(Math.max(0, votes)) + descendantWeight);
+  const votes = Math.max(1, Number(node.votes ?? 0) || 1);
+  const average = Math.max(0.5, Math.min(5, Number(node.average ?? 0) || 3));
+  return Math.max(1, votes * (0.35 + (0.65 * average) / 5));
 }
 
 export function postHrefForPath(path = [], childType = null) {
