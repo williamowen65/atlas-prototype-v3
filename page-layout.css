@@ -74,16 +74,12 @@
 .node-child-summary {
   position: static;
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 6px;
   min-width: 0;
   margin-top: 8px;
   padding-right: 44px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
-  -webkit-overflow-scrolling: touch;
+  overflow: visible;
   color: #6d7685;
   font-size: .76rem;
   font-weight: 750;
