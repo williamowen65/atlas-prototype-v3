@@ -67,6 +67,34 @@
   width: 100%;
 }
 
+.node-child-summary {
+  position: absolute;
+  left: 20px;
+  right: 60px;
+  bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 14px;
+  min-width: 0;
+  color: #6d7685;
+  font-size: .78rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.node-child-summary-item {
+  white-space: nowrap;
+}
+
+.node-child-summary-item strong {
+  color: #303949;
+  font-weight: 850;
+}
+
+.node-child-summary-item.requested {
+  color: #566174;
+}
+
 .create-workspace {
   width: min(720px, 100%);
   margin: 0 auto;
@@ -113,6 +141,13 @@
 
   .post-nav .app-nav-link {
     flex: 0 0 auto;
+  }
+
+  .node-child-summary {
+    left: 16px;
+    right: 58px;
+    bottom: 16px;
+    gap: 5px 12px;
   }
 
   .create-workspace,
