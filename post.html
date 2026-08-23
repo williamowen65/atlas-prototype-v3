@@ -15,23 +15,23 @@
   </script>
 </head>
 <body>
-  <main class="app-shell">
-    <nav class="app-nav post-nav" aria-label="Graph navigation">
-      <a class="app-nav-link" href="./index.html">Feed</a>
-      <a class="app-nav-link" href="./create.html">Create Node</a>
-    </nav>
-
-    <header class="page-header compact-page-header">
-      <div>
-        <p class="eyebrow">Atlas Prototype V3 · PTT-58</p>
-        <h1>Post hierarchy</h1>
-        <p class="lede">See this post in context, move through its parent route, and explore child layers.</p>
+  <main class="app-shell post-app-shell">
+    <header class="post-toolbar-shell">
+      <div class="post-toolbar-title">
+        <strong>Atlas hierarchy</strong>
+        <span>Public think tank</span>
       </div>
-      <div class="storage-card" aria-live="polite">
+
+      <nav class="app-nav post-nav" aria-label="Graph navigation">
+        <a class="app-nav-link" href="./index.html">Feed</a>
+        <a class="app-nav-link" href="./create.html">Create Node</a>
+      </nav>
+
+      <div class="storage-card post-storage-status" aria-live="polite" title="Local Graph storage status">
         <span class="status-dot" aria-hidden="true"></span>
         <div>
-          <strong id="storage-status">Connecting to IndexedDB…</strong>
-          <span id="storage-detail">Local browser persistence</span>
+          <strong id="storage-status">Local</strong>
+          <span id="storage-detail">Connecting…</span>
         </div>
       </div>
     </header>
