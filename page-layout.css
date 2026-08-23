@@ -67,6 +67,10 @@
   width: 100%;
 }
 
+.nodes-workspace .node-stats {
+  padding-left: 9px;
+}
+
 .has-child-summary .node-card-body {
   padding-bottom: 0 !important;
 }
