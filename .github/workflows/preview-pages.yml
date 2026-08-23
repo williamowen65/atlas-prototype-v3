@@ -1,0 +1,79 @@
+name: Preview GitHub Pages
+
+on:
+  push:
+    branches:
+      - preview
+      - 'PTT-*'
+
+concurrency:
+  group: preview-pages
+  cancel-in-progress: true
+
+jobs:
+  follow-preview:
+    name: Keep preview following the active feature branch
+    if: github.ref_name != 'preview'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Advance preview when it was following this branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const beforeSha = context.payload.before;
+            const newSha = context.sha;
+
+            const previewRef = await github.rest.git.getRef({
+              owner,
+              repo,
+              ref: 'heads/preview'
+            });
+
+            const previewSha = previewRef.data.object.sha;
+
+            if (previewSha !== beforeSha) {
+              core.notice(
+                `preview is not following ${context.ref}; leaving preview unchanged.`
+              );
+              return;
+            }
+
+            await github.rest.git.updateRef({
+              owner,
+              repo,
+              ref: 'heads/preview',
+              sha: newSha,
+              force: true
+            });
+
+            core.notice(`Moved preview from ${beforeSha} to ${newSha}.`);
+
+  deploy-pages:
+    name: Deploy preview to GitHub Pages
+    if: github.ref_name == 'preview'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout preview
+        uses: actions/checkout@v6
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
