@@ -35,6 +35,26 @@
   color: #fff;
 }
 
+.post-nav {
+  width: 100%;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.post-nav .app-nav-link {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.app-nav-current-post {
+  cursor: default;
+}
+
 .compact-page-header {
   margin-bottom: 22px;
 }
@@ -87,8 +107,12 @@
     width: 100%;
   }
 
-  .app-nav-link {
+  .feed-nav .app-nav-link {
     flex: 1;
+  }
+
+  .post-nav .app-nav-link {
+    flex: 0 0 auto;
   }
 
   .create-workspace,
