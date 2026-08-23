@@ -161,11 +161,6 @@ export function mountNodeManager(graph) {
       body.appendChild(meta);
     }
 
-    const id = document.createElement("div");
-    id.className = "node-id";
-    id.textContent = `id: ${node.id}`;
-    body.appendChild(id);
-
     const actions = document.createElement("div");
     actions.className = "node-actions";
 
