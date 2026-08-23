@@ -1,23 +1,8 @@
-function commaList(value) {
-  return Array.isArray(value) ? value.join(", ") : "";
-}
-
 function createPill(text, extraClass = "") {
   const pill = document.createElement("span");
   pill.className = `pill ${extraClass}`.trim();
   pill.textContent = text;
   return pill;
-}
-
-function addOptionIfMissing(select, value) {
-  if (!value) {
-    return;
-  }
-
-  const exists = Array.from(select.options).some((option) => option.value === value);
-  if (!exists) {
-    select.add(new Option(value, value, false, false));
-  }
 }
 
 function formatSemanticType(value) {
@@ -26,22 +11,10 @@ function formatSemanticType(value) {
 
 function pluralizeType(type, count) {
   const value = String(type ?? "").trim();
-  if (count === 1 || !value) {
-    return value;
-  }
-
-  if (value.toLowerCase() === "evidence") {
-    return value;
-  }
-
-  if (/[^aeiou]y$/i.test(value)) {
-    return `${value.slice(0, -1)}ies`;
-  }
-
-  if (/(s|x|z|ch|sh)$/i.test(value)) {
-    return `${value}es`;
-  }
-
+  if (count === 1 || !value) return value;
+  if (value.toLowerCase() === "evidence") return value;
+  if (/[^aeiou]y$/i.test(value)) return `${value.slice(0, -1)}ies`;
+  if (/(s|x|z|ch|sh)$/i.test(value)) return `${value}es`;
   return `${value}s`;
 }
 
@@ -80,16 +53,6 @@ export function mountNodeManager(graph) {
     storageCard: document.querySelector(".storage-card"),
     storageStatus: document.querySelector("#storage-status"),
     storageDetail: document.querySelector("#storage-detail"),
-    form: document.querySelector("#node-form"),
-    formTitle: document.querySelector("#form-title"),
-    nodeId: document.querySelector("#node-id"),
-    title: document.querySelector("#node-title"),
-    type: document.querySelector("#node-type"),
-    description: document.querySelector("#node-description"),
-    requestedChildTypes: document.querySelector("#node-requested-child-types"),
-    affectedLocations: document.querySelector("#node-affected-locations"),
-    submit: document.querySelector("#submit-node"),
-    cancelEdit: document.querySelector("#cancel-edit"),
     nodeCount: document.querySelector("#node-count"),
     nodeList: document.querySelector("#node-list"),
     toggleRaw: document.querySelector("#toggle-raw"),
@@ -100,50 +63,7 @@ export function mountNodeManager(graph) {
     message: document.querySelector("#message"),
   };
 
-  const $ = window.jQuery;
-  const select2Ready = Boolean($?.fn?.select2);
   let messageTimer;
-
-  if (select2Ready) {
-    $(elements.type).select2({
-      tags: true,
-      width: "100%",
-      placeholder: "Choose or enter a semantic type",
-      allowClear: true,
-    });
-
-    $(elements.requestedChildTypes).select2({
-      tags: true,
-      width: "100%",
-      placeholder: "Choose or enter requested child types",
-      closeOnSelect: false,
-    });
-  }
-
-  function setTypeValue(value) {
-    addOptionIfMissing(elements.type, value);
-    if (select2Ready) {
-      $(elements.type).val(value || null).trigger("change");
-    } else {
-      elements.type.value = value ?? "";
-    }
-  }
-
-  function setRequestedChildTypes(values = []) {
-    for (const value of values) {
-      addOptionIfMissing(elements.requestedChildTypes, value);
-    }
-
-    if (select2Ready) {
-      $(elements.requestedChildTypes).val(values).trigger("change");
-      return;
-    }
-
-    const selected = new Set(values);
-    for (const option of elements.requestedChildTypes.options) {
-      option.selected = selected.has(option.value);
-    }
-  }
 
   function showMessage(text, isError = false) {
     clearTimeout(messageTimer);
@@ -153,28 +73,6 @@ export function mountNodeManager(graph) {
     messageTimer = setTimeout(() => {
       elements.message.hidden = true;
     }, 4200);
-  }
-
-  function readForm() {
-    return {
-      title: elements.title.value,
-      type: select2Ready ? ($(elements.type).val() ?? "") : elements.type.value,
-      description: elements.description.value,
-      requestedChildTypes: select2Ready
-        ? ($(elements.requestedChildTypes).val() ?? [])
-        : Array.from(elements.requestedChildTypes.selectedOptions, (option) => option.value),
-      affectedLocations: elements.affectedLocations.value,
-    };
-  }
-
-  function resetForm() {
-    elements.form.reset();
-    setTypeValue("");
-    setRequestedChildTypes([]);
-    elements.nodeId.value = "";
-    elements.formTitle.textContent = "Create Node";
-    elements.submit.textContent = "Create Node";
-    elements.cancelEdit.hidden = true;
   }
 
   function childCountForType(node, requestedType, allNodes) {
@@ -188,9 +86,7 @@ export function mountNodeManager(graph) {
 
   function renderRequestedChildTypes(node, allNodes) {
     const requestedTypes = node.requestedChildTypes ?? [];
-    if (requestedTypes.length === 0) {
-      return null;
-    }
+    if (requestedTypes.length === 0) return null;
 
     const tabs = document.createElement("div");
     tabs.className = "requested-child-tabs";
@@ -261,9 +157,7 @@ export function mountNodeManager(graph) {
     if (locations.length > 0) {
       const meta = document.createElement("div");
       meta.className = "node-meta";
-      for (const location of locations) {
-        meta.appendChild(createPill(location, "location"));
-      }
+      for (const location of locations) meta.appendChild(createPill(location, "location"));
       body.appendChild(meta);
     }
 
@@ -280,7 +174,9 @@ export function mountNodeManager(graph) {
       pathData: "M12 20h9 M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z",
       extraClass: "node-icon-button-edit",
     });
-    edit.addEventListener("click", () => beginEdit(node.id));
+    edit.addEventListener("click", () => {
+      window.location.href = `./create.html?id=${encodeURIComponent(node.id)}`;
+    });
 
     const remove = createIconButton({
       label: `Delete ${node.title}`,
@@ -294,9 +190,7 @@ export function mountNodeManager(graph) {
     entry.appendChild(card);
 
     const requestedTabs = renderRequestedChildTypes(node, allNodes);
-    if (requestedTabs) {
-      entry.appendChild(requestedTabs);
-    }
+    if (requestedTabs) entry.appendChild(requestedTabs);
 
     return entry;
   }
@@ -313,78 +207,26 @@ export function mountNodeManager(graph) {
       const title = document.createElement("strong");
       title.textContent = "No Nodes stored yet";
       const detail = document.createElement("span");
-      detail.textContent = "Create one with the form or load the sample fixture data.";
+      detail.textContent = "Create a Node or load the sample fixture data.";
       empty.append(title, detail);
       elements.nodeList.appendChild(empty);
       return;
     }
 
-    for (const node of nodes) {
-      elements.nodeList.appendChild(renderNodeCard(node, nodes));
-    }
-  }
-
-  async function beginEdit(id) {
-    try {
-      const node = await graph.getNode(id);
-      if (!node) {
-        showMessage("That Node no longer exists.", true);
-        await refresh();
-        return;
-      }
-
-      elements.nodeId.value = node.id;
-      elements.title.value = node.title;
-      setTypeValue(node.type);
-      elements.description.value = node.description ?? "";
-      setRequestedChildTypes(node.requestedChildTypes ?? []);
-      elements.affectedLocations.value = commaList(node.affectedLocations);
-      elements.formTitle.textContent = "Edit Node";
-      elements.submit.textContent = "Save changes";
-      elements.cancelEdit.hidden = false;
-      elements.title.focus();
-      elements.form.scrollIntoView({ behavior: "smooth", block: "start" });
-    } catch (error) {
-      showMessage(error.message, true);
-    }
+    for (const node of nodes) elements.nodeList.appendChild(renderNodeCard(node, nodes));
   }
 
   async function deleteNode(node) {
-    if (!window.confirm(`Delete “${node.title}” from this browser?`)) {
-      return;
-    }
+    if (!window.confirm(`Delete “${node.title}” from this browser?`)) return;
 
     try {
       await graph.deleteNode(node.id);
-      if (elements.nodeId.value === node.id) {
-        resetForm();
-      }
       await refresh();
       showMessage("Node deleted from IndexedDB.");
     } catch (error) {
       showMessage(error.message, true);
     }
   }
-
-  elements.form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    try {
-      const id = elements.nodeId.value;
-      if (id) {
-        await graph.updateNode(id, readForm());
-        showMessage("Node changes saved to IndexedDB.");
-      } else {
-        await graph.createNode(readForm());
-        showMessage("Node saved to IndexedDB in this browser.");
-      }
-      resetForm();
-      await refresh();
-    } catch (error) {
-      showMessage(error.message, true);
-    }
-  });
-
-  elements.cancelEdit.addEventListener("click", resetForm);
 
   elements.toggleRaw.addEventListener("click", () => {
     const showing = !elements.rawPanel.hidden;
@@ -394,13 +236,10 @@ export function mountNodeManager(graph) {
   });
 
   elements.clearAll.addEventListener("click", async () => {
-    if (!window.confirm("Clear every locally stored Graph Node from this browser?")) {
-      return;
-    }
+    if (!window.confirm("Clear every locally stored Graph Node from this browser?")) return;
 
     try {
       await graph.clearNodes();
-      resetForm();
       await refresh();
       showMessage("All Graph Nodes were cleared from IndexedDB.");
     } catch (error) {
@@ -411,9 +250,7 @@ export function mountNodeManager(graph) {
   elements.loadFixtures.addEventListener("click", async () => {
     try {
       const response = await fetch("./src/contexts/graph/fixtures/sample-nodes.json", { cache: "no-store" });
-      if (!response.ok) {
-        throw new Error(`Unable to load fixture data (${response.status}).`);
-      }
+      if (!response.ok) throw new Error(`Unable to load fixture data (${response.status}).`);
       const fixtures = await response.json();
       const imported = await graph.importNodes(fixtures);
       await refresh();
