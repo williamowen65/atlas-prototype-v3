@@ -6,10 +6,12 @@
   <title>Graph Post · Atlas</title>
   <link id="app-styles" rel="stylesheet" href="./styles.css" />
   <link id="page-styles" rel="stylesheet" href="./page-layout.css" />
+  <link id="hierarchy-styles" rel="stylesheet" href="./hierarchy.css" />
   <script>
     const previewVersion = Date.now();
     document.querySelector("#app-styles").href = `./styles.css?preview=${previewVersion}`;
     document.querySelector("#page-styles").href = `./page-layout.css?preview=${previewVersion}`;
+    document.querySelector("#hierarchy-styles").href = `./hierarchy.css?preview=${previewVersion}`;
   </script>
 </head>
 <body>
@@ -23,8 +25,8 @@
     <header class="page-header compact-page-header">
       <div>
         <p class="eyebrow">Atlas Prototype V3 · PTT-58</p>
-        <h1>Post</h1>
-        <p class="lede">View one Graph Node at its own URL.</p>
+        <h1>Post hierarchy</h1>
+        <p class="lede">See this post in context, move through its parent route, and explore child layers.</p>
       </div>
       <div class="storage-card" aria-live="polite">
         <span class="status-dot" aria-hidden="true"></span>
@@ -41,6 +43,10 @@
     </section>
   </main>
 
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-weighted-voronoi@1.1.3/build/d3-weighted-voronoi.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-voronoi-map@2.1.1/build/d3-voronoi-map.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-voronoi-treemap@1.1.2/build/d3-voronoi-treemap.min.js"></script>
   <script type="module">
     import(`./src/app/post.js?preview=${Date.now()}`);
   </script>
