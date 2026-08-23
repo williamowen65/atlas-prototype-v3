@@ -52,6 +52,7 @@
               <option value="issue">issue</option>
               <option value="solution">solution</option>
               <option value="question">question</option>
+              <option value="answer">answer</option>
               <option value="proposal">proposal</option>
               <option value="evidence">evidence</option>
               <option value="implementation">implementation</option>
@@ -67,16 +68,17 @@
 
           <label>
             <span>Requested child types</span>
-            <select id="node-requested-child-types" name="requestedChildTypes" multiple>
+            <select id="node-requested-child-types" name="requestedChildTypes" multiple required>
               <option value="issue">issue</option>
               <option value="solution">solution</option>
               <option value="question">question</option>
+              <option value="answer">answer</option>
               <option value="proposal">proposal</option>
               <option value="evidence">evidence</option>
               <option value="implementation">implementation</option>
               <option value="challenge">challenge</option>
             </select>
-            <small>Choose suggestions or enter new child types. Multiple values are allowed.</small>
+            <small>Request at least one kind of feedback. Choose suggestions or enter any new type; multiple values are allowed.</small>
           </label>
 
           <label>
