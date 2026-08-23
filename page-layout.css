@@ -123,6 +123,25 @@
   padding: clamp(20px, 4vw, 30px);
 }
 
+.post-entry .requested-child-tabs {
+  width: min(92%, 680px);
+  max-width: 100%;
+  justify-content: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.post-entry .requested-child-tab {
+  flex: 0 0 auto;
+  min-width: max-content;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
 .button-link {
   display: inline-flex;
   align-items: center;
