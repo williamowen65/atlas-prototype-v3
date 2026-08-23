@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atlas Graph Node Manager</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link id="app-styles" rel="stylesheet" href="./styles.css" />
+  <script>
+    document.querySelector("#app-styles").href = `./styles.css?preview=${Date.now()}`;
+  </script>
 </head>
 <body>
   <main class="app-shell">
