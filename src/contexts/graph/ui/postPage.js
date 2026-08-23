@@ -99,6 +99,7 @@ export function mountPostPage(graph) {
     storageCard: document.querySelector(".storage-card"),
     storageStatus: document.querySelector("#storage-status"),
     storageDetail: document.querySelector("#storage-detail"),
+    selectedPostNav: document.querySelector("#selected-post-nav"),
     message: document.querySelector("#post-message"),
     postView: document.querySelector("#post-view"),
   };
@@ -107,6 +108,20 @@ export function mountPostPage(graph) {
     elements.message.textContent = text;
     elements.message.classList.toggle("error", isError);
     elements.message.hidden = false;
+  }
+
+  function showSelectedPostInNav(node) {
+    if (!elements.selectedPostNav) return;
+    elements.selectedPostNav.textContent = node.title;
+    elements.selectedPostNav.title = node.title;
+    elements.selectedPostNav.hidden = false;
+
+    requestAnimationFrame(() => {
+      elements.selectedPostNav.scrollIntoView({
+        block: "nearest",
+        inline: "nearest",
+      });
+    });
   }
 
   async function deleteNode(node) {
@@ -200,7 +215,7 @@ export function mountPostPage(graph) {
 
       const id = new URLSearchParams(window.location.search).get("id");
       if (!id) {
-        showMessage("No post was selected. Open a post from the Nodes page.", true);
+        showMessage("No post was selected. Open a post from the Feed page.", true);
         return;
       }
 
@@ -215,6 +230,7 @@ export function mountPostPage(graph) {
       }
 
       document.title = `${node.title} · Atlas`;
+      showSelectedPostInNav(node);
       renderPost(node, allNodes);
     } catch (error) {
       elements.storageCard.classList.add("error");
