@@ -67,12 +67,12 @@
   width: 100%;
 }
 
-.nodes-workspace .node-stats {
-  padding-left: 9px;
-}
-
 .has-child-summary .node-card-body {
   padding-bottom: 0 !important;
+}
+
+.node-list .node-stats {
+  padding-left: 9px;
 }
 
 .node-child-summary {
