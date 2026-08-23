@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atlas Graph Node Manager</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -43,8 +44,16 @@
 
           <label>
             <span>Semantic type</span>
-            <input id="node-type" name="type" required maxlength="80" placeholder="e.g. issue, solution, question" />
-            <small>Type is data, not a hard-coded Node subclass.</small>
+            <select id="node-type" name="type" required>
+              <option></option>
+              <option value="issue">issue</option>
+              <option value="solution">solution</option>
+              <option value="question">question</option>
+              <option value="proposal">proposal</option>
+              <option value="evidence">evidence</option>
+              <option value="implementation">implementation</option>
+            </select>
+            <small>Choose a suggestion or type a new semantic type. Type is data, not a hard-coded Node subclass.</small>
           </label>
 
           <label>
@@ -54,8 +63,15 @@
 
           <label>
             <span>Requested child types</span>
-            <input id="node-requested-child-types" name="requestedChildTypes" placeholder="issue, solution" />
-            <small>Comma-separated for this prototype.</small>
+            <select id="node-requested-child-types" name="requestedChildTypes" multiple>
+              <option value="issue">issue</option>
+              <option value="solution">solution</option>
+              <option value="question">question</option>
+              <option value="proposal">proposal</option>
+              <option value="evidence">evidence</option>
+              <option value="implementation">implementation</option>
+            </select>
+            <small>Choose any suggestions or enter new child types. Multiple values are allowed.</small>
           </label>
 
           <label>
@@ -98,6 +114,8 @@
     </section>
   </main>
 
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
   <script type="module" src="./src/app/main.js"></script>
 </body>
 </html>
