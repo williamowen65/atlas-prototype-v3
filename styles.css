@@ -216,12 +216,11 @@ input:focus, textarea:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(
   padding-right: 0;
 }
 .node-title-line {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 7px 10px;
+  display: block;
 }
 .node-type-label {
+  display: block;
+  margin-bottom: 5px;
   color: #707987;
   font-size: .76rem;
   font-weight: 850;
@@ -229,6 +228,7 @@ input:focus, textarea:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(
   text-transform: uppercase;
 }
 .node-title-link {
+  display: block;
   color: inherit;
   text-decoration: none;
 }
