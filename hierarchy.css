@@ -11,8 +11,8 @@
 
 .hierarchy-breadcrumb {
   position: sticky;
-  top: 8px;
-  z-index: 12;
+  top: 58px;
+  z-index: 35;
   display: flex;
   gap: 7px;
   align-items: center;
@@ -22,12 +22,13 @@
   padding: 8px 8px 10px;
   border: 1px solid rgba(216, 222, 232, .88);
   border-radius: 12px;
-  background: rgba(245,247,251,.94);
+  background: rgba(245,247,251,.97);
   box-shadow: 0 6px 18px rgba(28,39,64,.05);
   white-space: nowrap;
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .hierarchy-breadcrumb a {
@@ -58,7 +59,7 @@
   position: relative;
   width: min(94%, 820px);
   margin: 2px auto 0;
-  scroll-margin-top: 62px;
+  scroll-margin-top: 124px;
   transition: box-shadow .18s ease, background-color .18s ease, transform .18s ease;
 }
 
@@ -291,12 +292,13 @@
   }
 
   .hierarchy-breadcrumb {
-    top: 4px;
+    top: 54px;
     margin-inline: 0;
   }
 
   .hierarchy-context-card {
     width: calc(100% - 20px);
+    scroll-margin-top: 118px;
   }
 
   .hierarchy-child-toggle {
