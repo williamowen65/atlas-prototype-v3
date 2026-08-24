@@ -42,26 +42,13 @@ export function resolvePathIds(pathIds = [], selectedId, nodes = []) {
   return path;
 }
 
-// Preserve the contextual response appearances from Semantic Zooming commit
-// 9e748de. A shared relationship Node can belong to different response tabs
-// depending on which parent route is being viewed.
-const referenceResponseTypeByParent = {
-  "relationship-surplus-food-helps-homelessness": {
-    "solution-redirect-surplus-food": "yay",
-    "root-homelessness": "solution",
-  },
-  "relationship-social-media-implemented-by-atlas": {
-    "solution-social-media-collective-problem-solving": "implementation",
-    "root-atlas-public-think-tank": "connection",
-  },
-};
-
 export function responseTypeForParent(child, parentId) {
+  if (String(child?.type ?? "").trim().toLowerCase() === "relationship") {
+    return "relationship";
+  }
+
   const explicit = child?.metadata?.responseTypeByParent?.[parentId];
   if (explicit) return String(explicit).trim();
-
-  const referenced = referenceResponseTypeByParent[child?.id]?.[parentId];
-  if (referenced) return referenced;
 
   return String(child?.type ?? "").trim();
 }
