@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feed · Atlas</title>
+  <link id="app-styles" rel="stylesheet" href="./styles.css" />
+  <link id="page-styles" rel="stylesheet" href="./page-layout.css" />
+  <link id="site-header-styles" rel="stylesheet" href="./site-header.css" />
+  <script>
+    const previewVersion = Date.now();
+    document.querySelector("#app-styles").href = `./styles.css?preview=${previewVersion}`;
+    document.querySelector("#page-styles").href = `./page-layout.css?preview=${previewVersion}`;
+    document.querySelector("#site-header-styles").href = `./site-header.css?preview=${previewVersion}`;
+  </script>
+</head>
+<body>
+  <main class="app-shell feed-app-shell">
+    <header class="site-toolbar-shell">
+      <a class="site-toolbar-title" href="./index.html" aria-label="Atlas home">
+        <strong>Atlas hierarchy</strong>
+        <span>Public think tank</span>
+      </a>
+      <nav class="app-nav" aria-label="Atlas navigation">
+        <a class="app-nav-link" href="./index.html">Home</a>
+        <a class="app-nav-link active" href="./feed.html" aria-current="page">Feed</a>
+        <a class="app-nav-link" href="./create.html">Create Node</a>
+      </nav>
+    </header>
+
+    <div class="storage-card page-storage-state" aria-live="polite" hidden>
+      <span class="status-dot" aria-hidden="true"></span>
+      <div>
+        <strong id="storage-status">Connecting to IndexedDB…</strong>
+        <span id="storage-detail">Local browser persistence</span>
+      </div>
+    </div>
+
+    <section class="workspace nodes-workspace">
+      <section class="panel data-panel">
+        <div class="panel-heading data-heading">
+          <div class="feed-page-heading">
+            <p class="eyebrow">Atlas posts</p>
+            <h2>Feed <span id="node-count" class="count-badge">0</span></h2>
+          </div>
+          <div class="toolbar">
+            <button id="load-fixtures" class="button button-secondary" type="button">Load sample data</button>
+            <button id="toggle-raw" class="button button-secondary" type="button" aria-expanded="false">Show raw data</button>
+            <button id="clear-all" class="button button-danger" type="button">Clear all</button>
+          </div>
+        </div>
+
+        <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+        <div id="node-list" class="node-list"></div>
+
+        <section id="raw-data-panel" class="raw-data-panel" hidden>
+          <div class="raw-heading">
+            <h3>IndexedDB data</h3>
+            <span>Current Node records as JSON</span>
+          </div>
+          <pre id="raw-data">[]</pre>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script type="module">
+    import(`./src/app/main.js?preview=${Date.now()}`);
+  </script>
+</body>
+</html>
