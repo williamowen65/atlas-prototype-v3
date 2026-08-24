@@ -47,12 +47,46 @@
         <form id="node-form">
           <input id="node-id" type="hidden" />
 
+          <div class="creation-mode-toggle" role="group" aria-label="Node creation mode">
+            <button id="mode-post" class="creation-mode-button active" type="button" aria-pressed="true">Post</button>
+            <button id="mode-relationship" class="creation-mode-button" type="button" aria-pressed="false">Relationship</button>
+          </div>
+
+          <div id="relationship-fields" class="relationship-fields" hidden>
+            <div class="relationship-field-grid">
+              <label>
+                <span>First post</span>
+                <select id="relationship-source" aria-label="First related post"><option></option></select>
+              </label>
+
+              <label>
+                <span>Relationship keyword</span>
+                <input id="relationship-keyword" maxlength="80" list="relationship-keywords" placeholder="e.g. helps address" />
+                <datalist id="relationship-keywords">
+                  <option value="relates to"></option>
+                  <option value="helps address"></option>
+                  <option value="supports"></option>
+                  <option value="challenges"></option>
+                  <option value="depends on"></option>
+                  <option value="implemented by"></option>
+                </datalist>
+                <small>A short phrase explaining how the two posts are connected.</small>
+              </label>
+
+              <label>
+                <span>Second post</span>
+                <select id="relationship-target" aria-label="Second related post"><option></option></select>
+              </label>
+            </div>
+            <p class="relationship-help">Relationship Nodes always connect exactly two posts, never appear as Feed posts, and remain available from either connected post’s hierarchy.</p>
+          </div>
+
           <label>
-            <span>Title</span>
+            <span id="title-label">Title</span>
             <input id="node-title" name="title" required maxlength="160" placeholder="e.g. Improve regional transit" />
           </label>
 
-          <label>
+          <label id="semantic-type-field">
             <span>Semantic type</span>
             <select id="node-type" name="type" required>
               <option></option>
@@ -65,7 +99,6 @@
               <option value="evidence">evidence</option>
               <option value="yay">yay</option>
               <option value="nay">nay</option>
-              <option value="relationship">relationship</option>
               <option value="proposal">proposal</option>
             </select>
             <small>Choose a suggestion or type a new semantic type.</small>
