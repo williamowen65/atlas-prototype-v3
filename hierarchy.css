@@ -281,6 +281,43 @@
   background: linear-gradient(150deg,#f5f0e5 0%,#ececdf 100%);
 }
 
+.hierarchy-empty-layer a {
+  color: #315f53;
+}
+
+.route-collection-workspace {
+  display: grid;
+  gap: 14px;
+  padding-top: 16px;
+  overflow: visible;
+}
+
+.route-collection-card {
+  width: min(94%, 820px);
+  margin: 0 auto;
+}
+
+.route-collection-card .node-card-body {
+  padding: clamp(18px, 4vw, 28px);
+}
+
+.route-collection-card h1 {
+  margin: 5px 0 0;
+  color: #202938;
+  font-size: clamp(1.65rem, 5vw, 2.35rem);
+  line-height: 1;
+  letter-spacing: -.035em;
+}
+
+.route-collection-layer {
+  margin-top: 0;
+}
+
+.route-collection-graph {
+  height: min(62svh, 620px);
+  min-height: 360px;
+}
+
 @media (max-width: 620px) {
   .post-workspace {
     width: 100%;
@@ -311,5 +348,19 @@
 
   .hierarchy-voronoi-layer {
     height: clamp(300px, 88vw, 360px);
+  }
+
+  .route-collection-workspace {
+    gap: 10px;
+    padding-top: 10px;
+  }
+
+  .route-collection-card {
+    width: calc(100% - 20px);
+  }
+
+  .route-collection-graph {
+    height: min(62svh, 520px);
+    min-height: 360px;
   }
 }
