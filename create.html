@@ -7,36 +7,43 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
   <link id="app-styles" rel="stylesheet" href="./styles.css" />
   <link id="page-styles" rel="stylesheet" href="./page-layout.css" />
+  <link id="site-header-styles" rel="stylesheet" href="./site-header.css" />
   <script>
     const previewVersion = Date.now();
     document.querySelector("#app-styles").href = `./styles.css?preview=${previewVersion}`;
     document.querySelector("#page-styles").href = `./page-layout.css?preview=${previewVersion}`;
+    document.querySelector("#site-header-styles").href = `./site-header.css?preview=${previewVersion}`;
   </script>
 </head>
 <body>
-  <main class="app-shell">
-    <nav class="app-nav feed-nav" aria-label="Graph navigation">
-      <a class="app-nav-link" href="./index.html">Feed</a>
-      <a class="app-nav-link active" href="./create.html" aria-current="page">Create Node</a>
-    </nav>
-
-    <header class="page-header compact-page-header">
-      <div>
-        <p class="eyebrow">Atlas Prototype V3 · PTT-58</p>
-        <h1 id="page-title">Create Node</h1>
-        <p id="page-lede" class="lede">Add a Graph Node through the Graph context API.</p>
-      </div>
-      <div class="storage-card" aria-live="polite">
-        <span class="status-dot" aria-hidden="true"></span>
-        <div>
-          <strong id="storage-status">Connecting to IndexedDB…</strong>
-          <span id="storage-detail">Local browser persistence</span>
-        </div>
-      </div>
+  <main class="app-shell create-app-shell">
+    <header class="site-toolbar-shell">
+      <a class="site-toolbar-title" href="./index.html" aria-label="Atlas feed">
+        <strong>Atlas hierarchy</strong>
+        <span>Public think tank</span>
+      </a>
+      <nav class="app-nav" aria-label="Atlas navigation">
+        <a class="app-nav-link" href="./index.html">Feed</a>
+        <a class="app-nav-link active" href="./create.html" aria-current="page">Create Node</a>
+      </nav>
     </header>
+
+    <div class="storage-card page-storage-state" aria-live="polite" hidden>
+      <span class="status-dot" aria-hidden="true"></span>
+      <div>
+        <strong id="storage-status">Connecting to IndexedDB…</strong>
+        <span id="storage-detail">Local browser persistence</span>
+      </div>
+    </div>
 
     <section class="create-workspace">
       <article class="panel create-panel">
+        <div class="create-panel-heading">
+          <p class="eyebrow">Graph post</p>
+          <h1 id="page-title">Create Node</h1>
+          <p id="page-lede" class="lede">Add a Graph Node through the Graph context API.</p>
+        </div>
+
         <form id="node-form">
           <input id="node-id" type="hidden" />
 
