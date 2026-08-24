@@ -15,6 +15,10 @@ function formatSemanticType(value) {
   return String(value ?? "").trim().toUpperCase();
 }
 
+function isRelationshipNode(node) {
+  return String(node?.type ?? "").trim().toLowerCase() === "relationship";
+}
+
 function pluralizeType(type, count) {
   const value = String(type ?? "").trim();
   if (count === 1 || !value) return value;
@@ -263,23 +267,24 @@ export function mountNodeManager(graph) {
 
   async function refresh() {
     const nodes = await graph.listNodes();
-    elements.nodeCount.textContent = String(nodes.length);
+    const feedNodes = nodes.filter((node) => !isRelationshipNode(node));
+    elements.nodeCount.textContent = String(feedNodes.length);
     elements.rawData.textContent = JSON.stringify(nodes, null, 2);
     elements.nodeList.replaceChildren();
 
-    if (nodes.length === 0) {
+    if (feedNodes.length === 0) {
       const empty = document.createElement("div");
       empty.className = "empty-state";
       const title = document.createElement("strong");
-      title.textContent = "No Nodes stored yet";
+      title.textContent = "No Feed posts stored yet";
       const detail = document.createElement("span");
-      detail.textContent = "Create a Node or load the sample fixture data.";
+      detail.textContent = "Create a post or load the sample fixture data.";
       empty.append(title, detail);
       elements.nodeList.appendChild(empty);
       return;
     }
 
-    for (const node of nodes) elements.nodeList.appendChild(renderNodeCard(node, nodes));
+    for (const node of feedNodes) elements.nodeList.appendChild(renderNodeCard(node, nodes));
   }
 
   async function deleteNode(node) {
