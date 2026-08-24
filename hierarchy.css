@@ -101,7 +101,7 @@
 
 /* The ancestor card itself is the graph reveal control; no extra chip is needed. */
 .hierarchy-card-toggle-hint {
-  display: none;
+  display: none !important;
 }
 
 /* Compact response switcher: only as wide as its tabs, centered over the graph. */
