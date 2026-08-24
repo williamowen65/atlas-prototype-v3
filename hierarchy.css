@@ -110,16 +110,21 @@
   font-weight: 780;
 }
 
+/* Compact response switcher: only as wide as its tabs, centered over the graph. */
 .hierarchy-child-toggle {
+  position: relative;
+  z-index: 6;
   display: flex;
-  width: min(88%, 720px);
-  margin: -5px auto 4px;
+  justify-content: flex-start;
+  width: max-content;
+  max-width: min(720px, calc(100vw - 24px));
+  margin: 4px auto -20px;
   overflow-x: auto;
   overflow-y: hidden;
   border: 1px solid rgba(49,95,83,.18);
   border-radius: 999px;
   background: rgba(255,255,255,.97);
-  box-shadow: 0 5px 14px rgba(28,39,64,.06);
+  box-shadow: 0 7px 18px rgba(28,39,64,.09);
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -168,18 +173,9 @@
   margin: 0 0 6px -50vw;
 }
 
+/* The response tabs already identify the active child type. */
 .hierarchy-layer-heading {
-  width: min(1040px, calc(100% - 24px));
-  margin: 0 auto;
-  padding: 1px 10px 7px;
-  overflow: hidden;
-  color: #7b857f;
-  font-size: .68rem;
-  font-weight: 820;
-  letter-spacing: .05em;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
+  display: none;
 }
 
 .hierarchy-voronoi-layer {
@@ -302,18 +298,15 @@
   }
 
   .hierarchy-child-toggle {
-    width: calc(100% - 34px);
+    width: max-content;
+    max-width: calc(100vw - 20px);
+    margin-bottom: -19px;
   }
 
   .hierarchy-child-toggle-button {
     min-height: 38px;
     padding: 7px 13px;
     font-size: .73rem;
-  }
-
-  .hierarchy-layer-heading {
-    width: calc(100% - 20px);
-    padding-inline: 4px;
   }
 
   .hierarchy-voronoi-layer {
