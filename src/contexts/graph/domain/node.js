@@ -23,10 +23,34 @@ function normalizeMetadata(value) {
   return { ...value };
 }
 
+function validateRelationshipShape(type, parentIds, metadata) {
+  if (String(type).toLowerCase() !== "relationship") return;
+
+  const uniqueParents = [...new Set(parentIds)];
+  if (uniqueParents.length !== 2 || parentIds.length !== 2) {
+    throw new Error("A relationship Node must connect exactly two different parent Nodes.");
+  }
+
+  const relationshipType = String(metadata.relationshipType ?? "").trim();
+  if (!relationshipType) {
+    throw new Error("A relationship keyword is required.");
+  }
+
+  if (metadata.sourceId && !uniqueParents.includes(String(metadata.sourceId))) {
+    throw new Error("The relationship source must be one of its two parent Nodes.");
+  }
+
+  if (metadata.targetId && !uniqueParents.includes(String(metadata.targetId))) {
+    throw new Error("The relationship target must be one of its two parent Nodes.");
+  }
+}
+
 export function normalizeNodeInput(input) {
   const title = String(input.title ?? "").trim();
   const type = String(input.type ?? "").trim();
   const requestedChildTypes = normalizeList(input.requestedChildTypes);
+  const parentIds = normalizeList(input.parentIds);
+  const metadata = normalizeMetadata(input.metadata);
 
   if (!title) {
     throw new Error("A Node title is required.");
@@ -39,6 +63,8 @@ export function normalizeNodeInput(input) {
   if (requestedChildTypes.length === 0) {
     throw new Error("At least one requested feedback type is required.");
   }
+
+  validateRelationshipShape(type, parentIds, metadata);
 
   return {
     title,
@@ -70,9 +96,19 @@ export function updateNodeRecord(existingNode, input, { now } = {}) {
     throw new Error("An existing Node is required for an update.");
   }
 
+  const effectiveInput = {
+    ...input,
+    parentIds: Object.prototype.hasOwnProperty.call(input, "parentIds")
+      ? input.parentIds
+      : existingNode.parentIds,
+    metadata: Object.prototype.hasOwnProperty.call(input, "metadata")
+      ? input.metadata
+      : existingNode.metadata,
+  };
+
   const updated = {
     ...existingNode,
-    ...normalizeNodeInput(input),
+    ...normalizeNodeInput(effectiveInput),
     updatedAt: now ?? new Date().toISOString(),
   };
 
