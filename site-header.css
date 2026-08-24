@@ -102,6 +102,19 @@
   display: none;
 }
 
+/* On Post pages, the breadcrumb is the second row of the full-width sticky header. */
+.post-app-shell .hierarchy-breadcrumb {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-left: clamp(16px, 3vw, 44px);
+  padding-right: clamp(16px, 3vw, 44px);
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+}
+
 .feed-page-heading h2 {
   display: flex;
   align-items: center;
@@ -140,6 +153,11 @@
     gap: 6px;
     min-height: 54px;
     padding: 4px 12px 6px;
+  }
+
+  .post-app-shell .hierarchy-breadcrumb {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   .site-toolbar-title strong {
