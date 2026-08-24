@@ -6,43 +6,43 @@
   <title>Graph Nodes · Atlas</title>
   <link id="app-styles" rel="stylesheet" href="./styles.css" />
   <link id="page-styles" rel="stylesheet" href="./page-layout.css" />
+  <link id="site-header-styles" rel="stylesheet" href="./site-header.css" />
   <script>
     const previewVersion = Date.now();
     document.querySelector("#app-styles").href = `./styles.css?preview=${previewVersion}`;
     document.querySelector("#page-styles").href = `./page-layout.css?preview=${previewVersion}`;
+    document.querySelector("#site-header-styles").href = `./site-header.css?preview=${previewVersion}`;
   </script>
 </head>
 <body>
-  <main class="app-shell">
-    <nav class="app-nav feed-nav" aria-label="Graph navigation">
-      <a class="app-nav-link active" href="./index.html" aria-current="page">Feed</a>
-      <a class="app-nav-link" href="./create.html">Create Node</a>
-    </nav>
-
-    <header class="page-header compact-page-header">
-      <div>
-        <p class="eyebrow">Atlas Prototype V3 · PTT-58</p>
-        <h1>Graph Nodes</h1>
-        <p class="lede">Inspect and manage Graph Nodes stored locally in this browser.</p>
-      </div>
-      <div class="storage-card" aria-live="polite">
-        <span class="status-dot" aria-hidden="true"></span>
-        <div>
-          <strong id="storage-status">Connecting to IndexedDB…</strong>
-          <span id="storage-detail">Local browser persistence</span>
-        </div>
-      </div>
+  <main class="app-shell feed-app-shell">
+    <header class="site-toolbar-shell">
+      <a class="site-toolbar-title" href="./index.html" aria-label="Atlas feed">
+        <strong>Atlas hierarchy</strong>
+        <span>Public think tank</span>
+      </a>
+      <nav class="app-nav" aria-label="Atlas navigation">
+        <a class="app-nav-link active" href="./index.html" aria-current="page">Feed</a>
+        <a class="app-nav-link" href="./create.html">Create Node</a>
+      </nav>
     </header>
+
+    <div class="storage-card page-storage-state" aria-live="polite" hidden>
+      <span class="status-dot" aria-hidden="true"></span>
+      <div>
+        <strong id="storage-status">Connecting to IndexedDB…</strong>
+        <span id="storage-detail">Local browser persistence</span>
+      </div>
+    </div>
 
     <section class="workspace nodes-workspace">
       <section class="panel data-panel">
         <div class="panel-heading data-heading">
-          <div>
-            <p class="eyebrow">Stored locally</p>
-            <h2>Nodes <span id="node-count" class="count-badge">0</span></h2>
+          <div class="feed-page-heading">
+            <p class="eyebrow">Atlas posts</p>
+            <h2>Feed <span id="node-count" class="count-badge">0</span></h2>
           </div>
           <div class="toolbar">
-            <a class="button button-primary button-link" href="./create.html">Create Node</a>
             <button id="load-fixtures" class="button button-secondary" type="button">Load sample data</button>
             <button id="toggle-raw" class="button button-secondary" type="button" aria-expanded="false">Show raw data</button>
             <button id="clear-all" class="button button-danger" type="button">Clear all</button>
