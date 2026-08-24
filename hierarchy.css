@@ -99,15 +99,9 @@
   font-size: .82rem;
 }
 
+/* The ancestor card itself is the graph reveal control; no extra chip is needed. */
 .hierarchy-card-toggle-hint {
-  display: inline-flex;
-  margin-top: 9px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: #f0f2ef;
-  color: #66736c;
-  font-size: .68rem;
-  font-weight: 780;
+  display: none;
 }
 
 /* Compact response switcher: only as wide as its tabs, centered over the graph. */
@@ -118,7 +112,7 @@
   justify-content: flex-start;
   width: max-content;
   max-width: min(720px, calc(100vw - 24px));
-  margin: 4px auto -20px;
+  margin: 4px auto 0;
   overflow-x: auto;
   overflow-y: hidden;
   border: 1px solid rgba(49,95,83,.18);
@@ -161,16 +155,21 @@
 }
 
 /*
- * The graph is a viewport-wide layer, not a card. This mirrors the
- * pre-clean-rewrite prototype: floating context cards stay inset while every
- * D3 layer breaks out of the app shell and uses the full screen width.
+ * The graph is a viewport-wide layer, not a card. Center the 100vw layer on
+ * the viewport so app-shell padding can never leave a gutter on either side.
  */
 .hierarchy-layer-block {
   position: relative;
   left: 50%;
   width: 100vw;
   max-width: 100vw;
-  margin: 0 0 6px -50vw;
+  margin: 0 0 6px;
+  transform: translateX(-50%);
+}
+
+/* Account for the 10px grid gap and pull the graph 20px beneath the 40px pill. */
+.hierarchy-child-toggle + .hierarchy-layer-block {
+  margin-top: -30px;
 }
 
 /* The response tabs already identify the active child type. */
@@ -337,7 +336,11 @@
   .hierarchy-child-toggle {
     width: max-content;
     max-width: calc(100vw - 20px);
-    margin-bottom: -19px;
+  }
+
+  /* 10px grid gap + 19px overlap for the 38px mobile pill. */
+  .hierarchy-child-toggle + .hierarchy-layer-block {
+    margin-top: -29px;
   }
 
   .hierarchy-child-toggle-button {
