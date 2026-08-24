@@ -91,18 +91,15 @@
   color: #263447;
 }
 
-/* Persistence still initializes in the prototype, but it is no longer UI chrome. */
 .page-storage-state[hidden] {
   display: none !important;
 }
 
-/* The hierarchy breadcrumb represents content only. Feed lives in global navigation. */
 .hierarchy-breadcrumb > a:first-child,
 .hierarchy-breadcrumb > a:first-child + .hierarchy-breadcrumb-separator {
   display: none;
 }
 
-/* On Post pages, the breadcrumb is the second row of the full-width sticky header. */
 .post-app-shell .hierarchy-breadcrumb {
   width: 100vw;
   max-width: 100vw;
@@ -136,6 +133,7 @@
   font-size: .88rem;
 }
 
+.home-app-shell,
 .post-app-shell,
 .feed-app-shell,
 .create-app-shell {
@@ -143,6 +141,7 @@
 }
 
 @media (max-width: 620px) {
+  .home-app-shell,
   .post-app-shell,
   .feed-app-shell,
   .create-app-shell {
