@@ -291,7 +291,7 @@ export function mountCreateNodePage(graph) {
       const id = elements.nodeId.value;
       if (id) await graph.updateNode(id, input);
       else await graph.createNode(input);
-      window.location.href = "./index.html";
+      window.location.href = "./feed.html";
     } catch (error) {
       showMessage(error.message, true);
       elements.submit.disabled = false;
