@@ -44,18 +44,18 @@ test("rejects a route that does not follow parent links", () => {
   assert.equal(resolvePathIds(["root-a", "shared"], "shared", nodes), null);
 });
 
-test("child type summaries use the contextual response type for shared nodes", () => {
-  assert.equal(responseTypeForParent(nodes[3], "solution-a"), "yay");
-  assert.equal(responseTypeForParent(nodes[3], "root-b"), "solution");
+test("relationship Nodes use a stable relationship response category from either parent", () => {
+  assert.equal(responseTypeForParent(nodes[3], "solution-a"), "relationship");
+  assert.equal(responseTypeForParent(nodes[3], "root-b"), "relationship");
 
   assert.deepEqual(childTypeSummaries(nodes[2], nodes), [
     { type: "challenge", count: 0, requested: true },
     { type: "implementation", count: 0, requested: true },
-    { type: "yay", count: 1, requested: false },
+    { type: "relationship", count: 1, requested: false },
     { type: "question", count: 1, requested: false },
   ]);
 
-  assert.deepEqual(childrenForType("solution-a", "yay", nodes).map((node) => node.id), ["shared"]);
+  assert.deepEqual(childrenForType("solution-a", "relationship", nodes).map((node) => node.id), ["shared"]);
 });
 
 test("aggregate weight follows direct support rather than descendant count", () => {
