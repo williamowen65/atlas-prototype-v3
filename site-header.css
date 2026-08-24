@@ -1,12 +1,18 @@
 .site-toolbar-shell {
+  position: sticky;
+  top: 0;
+  z-index: 40;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   min-height: 58px;
-  margin: 0 0 10px;
+  margin: 0;
   padding: 7px 4px 9px;
-  background: linear-gradient(180deg, rgba(245,247,251,.97), rgba(245,247,251,.74) 78%, rgba(245,247,251,0));
+  background: rgba(245,247,251,.97);
+  box-shadow: 0 1px 0 rgba(216,222,232,.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .site-toolbar-title {
@@ -114,21 +120,19 @@
 .post-app-shell,
 .feed-app-shell,
 .create-app-shell {
-  padding-top: 8px;
+  padding-top: 0;
 }
 
 @media (max-width: 620px) {
   .post-app-shell,
   .feed-app-shell,
   .create-app-shell {
-    padding-top: 4px;
+    padding-top: 0;
   }
 
   .site-toolbar-shell {
-    grid-template-columns: minmax(0, 1fr) auto;
     gap: 6px;
     min-height: 54px;
-    margin-bottom: 7px;
     padding: 4px 2px 6px;
   }
 
