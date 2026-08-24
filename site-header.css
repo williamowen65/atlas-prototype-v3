@@ -1,7 +1,4 @@
 .site-toolbar-shell {
-  position: sticky;
-  top: 0;
-  z-index: 40;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -13,6 +10,13 @@
   box-shadow: 0 1px 0 rgba(216,222,232,.7);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* Only the layered Post hierarchy needs persistent global navigation. */
+.post-app-shell > .site-toolbar-shell {
+  position: sticky;
+  top: 0;
+  z-index: 40;
 }
 
 .site-toolbar-title {
