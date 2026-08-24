@@ -99,12 +99,10 @@
   font-size: .82rem;
 }
 
-/* The ancestor card itself is the graph reveal control; no extra chip is needed. */
 .hierarchy-card-toggle-hint {
   display: none !important;
 }
 
-/* Compact response switcher: only as wide as its tabs, centered over the graph. */
 .hierarchy-child-toggle {
   position: relative;
   z-index: 6;
@@ -154,10 +152,6 @@
   color: #fff;
 }
 
-/*
- * The graph is a viewport-wide layer, not a card. Center the 100vw layer on
- * the viewport so app-shell padding can never leave a gutter on either side.
- */
 .hierarchy-layer-block {
   position: relative;
   left: 50%;
@@ -167,12 +161,10 @@
   transform: translateX(-50%);
 }
 
-/* Account for the 10px grid gap and pull the graph 20px beneath the 40px pill. */
 .hierarchy-child-toggle + .hierarchy-layer-block {
   margin-top: -30px;
 }
 
-/* The response tabs already identify the active child type. */
 .hierarchy-layer-heading {
   display: none;
 }
@@ -338,7 +330,6 @@
     max-width: calc(100vw - 20px);
   }
 
-  /* 10px grid gap + 19px overlap for the 38px mobile pill. */
   .hierarchy-child-toggle + .hierarchy-layer-block {
     margin-top: -29px;
   }
