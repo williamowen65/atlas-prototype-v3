@@ -37,7 +37,7 @@ test("creates a generic Node record without semantic subclasses", () => {
   assert.equal(node.createdAt, node.updatedAt);
 });
 
-test("creates fixture-style relationship, voting, and generic metadata", () => {
+test("creates a two-parent relationship Node with a relationship keyword", () => {
   const node = createNodeRecord(
     {
       title: "A relationship",
@@ -48,8 +48,9 @@ test("creates fixture-style relationship, voting, and generic metadata", () => {
       average: 4.5,
       metadata: {
         relationshipType: "helps-address",
-        sourceId: "source-1",
-        targetId: "target-1",
+        relationshipLabel: "helps address",
+        sourceId: "parent-1",
+        targetId: "parent-2",
       },
     },
     { id: "node-child", now: "2026-08-23T18:00:00.000Z" },
@@ -58,11 +59,35 @@ test("creates fixture-style relationship, voting, and generic metadata", () => {
   assert.deepEqual(node.parentIds, ["parent-1", "parent-2"]);
   assert.equal(node.votes, 12);
   assert.equal(node.average, 4.5);
-  assert.deepEqual(node.metadata, {
-    relationshipType: "helps-address",
-    sourceId: "source-1",
-    targetId: "target-1",
-  });
+  assert.equal(node.metadata.relationshipType, "helps-address");
+  assert.equal(node.metadata.sourceId, "parent-1");
+  assert.equal(node.metadata.targetId, "parent-2");
+});
+
+test("rejects relationship Nodes that could become roots or have only one parent", () => {
+  const base = {
+    title: "A relationship",
+    type: "relationship",
+    requestedChildTypes: ["challenge"],
+    metadata: { relationshipType: "relates-to" },
+  };
+
+  assert.throws(
+    () => createNodeRecord({ ...base, parentIds: [] }),
+    /exactly two different parent Nodes/i,
+  );
+  assert.throws(
+    () => createNodeRecord({ ...base, parentIds: ["parent-1"] }),
+    /exactly two different parent Nodes/i,
+  );
+  assert.throws(
+    () => createNodeRecord({ ...base, parentIds: ["parent-1", "parent-1"] }),
+    /exactly two different parent Nodes/i,
+  );
+  assert.throws(
+    () => createNodeRecord({ ...base, parentIds: ["parent-1", "parent-2"], metadata: {} }),
+    /relationship keyword is required/i,
+  );
 });
 
 test("updates mutable Node data while preserving identity, creation time, and internal metadata", () => {
