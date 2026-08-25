@@ -6,6 +6,10 @@ Current direction uses an ASP.NET Core / C# application as the authoritative app
 
 Client-code/use-case sketches should be used during planning to test whether bounded-context contracts remain readable and encapsulated before persistence and infrastructure details leak into callers.
 
+## Architecture documents
+
+- [Post Builder Architecture](post-builder.md) — separates the frontend draft-building experience from authoritative backend Post construction and validation.
+
 ## Next planning actions
 
 - Choose event dispatch and transaction behavior, including when durable messaging is necessary.
